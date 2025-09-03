@@ -1,0 +1,8 @@
+Objective:	to develop a system where customers apply for appointments remotely
+ 
+all:		tasks/appointments are done by org itself 
+pipeline: 	sales focused only 
+picktime:	
+
+
+features to add: emergency contacts of medical professionals
