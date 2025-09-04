@@ -6,4 +6,5 @@ button{
     padding: 12px 8px 12px 8px;
     background-color: rgb(14, 62, 217);
     color: white;
+    vertical-align: middle;
 }
