@@ -33,8 +33,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="button.css">
-    <link rel="stylesheet" href="form.css">
+    <link rel="stylesheet" href="../style/button.css">
+    <link rel="stylesheet" href="../style/form.css">
     <title>Sign up</title>
 </head>
 <body style="margin-top:3%; margin-bottom:3%;">

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "db.php";
+require_once "../db.php";
 
 $error = "";
 
@@ -76,8 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="form.css">
-    <link rel="stylesheet" href="button.css">
+    <link rel="stylesheet" href="../style/form.css">
+    <link rel="stylesheet" href="../style/button.css">
     <title>Log In</title>
 </head>
 <body>
