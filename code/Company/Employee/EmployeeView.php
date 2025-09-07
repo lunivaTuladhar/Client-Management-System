@@ -50,17 +50,18 @@
         background-color:#F5F3F3;
     }
      th{
-         
+        background-color: rgb(14,62,217,0.2);
         padding:12px;
         text-align:left;
+        color: rgb(14,62,217,0.9);
     }
     tr{
         height:32px;
     }
-
     thead th:first-child{
         border-top-left-radius: 12px;
         border-bottom-left-radius: 12px;
+        width: 12px;
     }
     thead th:last-child{
         border-top-right-radius: 12px;
@@ -96,7 +97,7 @@ include('fixed/sidebar.php');?>
             <th>More</th>
         </thead>
         <tr>
-            <td>apple</td>
+            <td>1</td>
             <td>apple</td>
             <td>apple</td>
             <td>apple</td>

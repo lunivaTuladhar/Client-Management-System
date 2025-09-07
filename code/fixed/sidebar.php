@@ -77,6 +77,7 @@
             align-items: center;
             cursor: pointer; /* clickable */
             gap: 8px;
+            margin-left: 14px;
         }
 
         body {
