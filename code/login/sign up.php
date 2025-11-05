@@ -1,5 +1,5 @@
 <?php
-require_once "db.php";
+require_once "../db.php";
 session_start();
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name     = $_POST['name'] ;
@@ -15,7 +15,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['password'] =  $password;
         
         // Redirect to company registration page
-        header("Location: register company.php");
+        header("Location: ../Company/register_company.php");
         exit();
     } else {
         // Insert into client table directly

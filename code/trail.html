@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.mycal-container {
+  width: 280px;
+  font-family: Arial, sans-serif;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+}
+.mycal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.mycal-btn {
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 16px;
+}
+.mycal-days, .mycal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+}
+.mycal-weekdays div {
+  font-weight: bold;
+  color: #555;
+}
+.mycal-day {
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.mycal-day:hover {
+  background: #e0e7ff;
+}
+.mycal-today {
+  background: #dbeafe;
+  color: #2563eb;
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+
+<div class="mycal-container">
+  <div class="mycal-header">
+    <button class="mycal-btn" id="mycal-prev">◀</button>
+    <div><span id="mycal-month"></span> <span id="mycal-year"></span></div>
+    <button class="mycal-btn" id="mycal-next">▶</button>
+  </div>
+  <div class="mycal-weekdays">
+    <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+  </div>
+  <div class="mycal-days" id="mycal-days"></div>
+</div>
+
+<script>
+(function(){
+  const monthNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  let viewDate=new Date();
+
+  const monthEl=document.getElementById('mycal-month');
+  const yearEl=document.getElementById('mycal-year');
+  const daysEl=document.getElementById('mycal-days');
+  const prev=document.getElementById('mycal-prev');
+  const next=document.getElementById('mycal-next');
+
+  function render(){
+    const year=viewDate.getFullYear();
+    const month=viewDate.getMonth();
+    monthEl.textContent=monthNames[month];
+    yearEl.textContent=year;
+    daysEl.innerHTML='';
+    const first=new Date(year,month,1);
+    const start=first.getDay();
+    const days=new Date(year,month+1,0).getDate();
+    for(let i=0;i<start;i++){
+      daysEl.appendChild(document.createElement('div'));
+    }
+    const today=new Date();
+    for(let d=1;d<=days;d++){
+      const cell=document.createElement('div');
+      cell.textContent=d;
+      cell.className='mycal-day';
+      const thisDate=new Date(year,month,d);
+      if(thisDate.toDateString()===today.toDateString()){
+        cell.classList.add('mycal-today');
+      }
+      cell.onclick=()=>location.href='otherpage.php?date='+thisDate.toISOString().split('T')[0];
+      daysEl.appendChild(cell);
+    }
+  }
+
+  prev.onclick=()=>{viewDate.setMonth(viewDate.getMonth()-1);render();};
+  next.onclick=()=>{viewDate.setMonth(viewDate.getMonth()+1);render();};
+  render();
+})();
+</script>
+
+</body>
+</html>

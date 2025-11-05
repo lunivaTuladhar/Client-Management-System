@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once "db.php";
+require_once "../db.php";
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $org_name = $_POST['org_name'] ?? '';
+    $org_name = $_POST['name'] ?? '';
     $contact  = $_POST['contact'] ?? '';
     $email    = $_POST['email'] ?? '';
     $type     = $_POST['type'] ?? '';
@@ -12,8 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $zip_code = $_POST['zip_code'] ?? '';
 
     // Insert into organization
-    $sql = "INSERT INTO organization (name, address, phone, email, org_name, type, zip_code) 
-            VALUES ('$org_name', '$address, $city, $state', '$contact', '$email', '$org_name', '$type', '$zip_code')";
+    $sql = "INSERT INTO company (name, address, phone, email, type, zip_code) 
+            VALUES ('$org_name', '$address, $city, $state', '$contact', '$email', '$type', '$zip_code')";
     
     if ($conn->query($sql) === TRUE) {
         $org_id = $conn->insert_id; // get ID of just inserted organization
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         
 
-        $sql2 = "INSERT INTO employee (name, password, email, phone, role, org_code) 
+        $sql2 = "INSERT INTO employee (name, password, email, phone, role,Company_ID) 
                  VALUES ('$emp_name', '$emp_pass', '$emp_email', '$emp_phone', 1, $org_id)";
         
         if ($conn->query($sql2) === TRUE) {
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             unset($_SESSION['password']);
             unset($_SESSION['email']);
             unset($_SESSION['contact']);
-            header("Location: log in.php");
+            header("Location: ../login/log in.php");
             exit();
         } else {
             echo "Error inserting employee: " . $conn->error;
@@ -48,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="form.css">
-    <link rel="stylesheet" href="button.css">
+    <link rel="stylesheet" href="../style/form.css">
+    <link rel="stylesheet" href="../style/button.css">
     <title>Register Company</title>
     <style>
         #second{

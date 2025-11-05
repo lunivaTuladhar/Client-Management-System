@@ -10,26 +10,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (!empty($email) && !empty($password)) {
 
-        // ---- Check SuperAdmin table FIRST ----
-        $sql = "SELECT * FROM superadmin WHERE email = ? AND password = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ss", $email, $password);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $superadmin = $result->fetch_assoc();
-
-        // ---- If not superadmin, check Employee ----
-        if (!$superadmin) {
+       
             $sql = "SELECT * FROM employee WHERE email = ? AND password = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ss", $email, $password);
             $stmt->execute();
             $result = $stmt->get_result();
             $employee = $result->fetch_assoc();
-        }
+        
 
         // ---- If not employee, check Client ----
-        if (!$superadmin && empty($employee)) {
+        if (empty($employee)) {
             $sql = "SELECT * FROM client WHERE email = ? AND password = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ss", $email, $password);
@@ -39,31 +30,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         // ---- Login Handling ----
-        if (!empty($superadmin)) {
-            $_SESSION['user_type'] = "superadmin";
-            $_SESSION['user_id']   = $superadmin['admin_id']; // make sure col name is admin_id
-            $_SESSION['name']      = $superadmin['name'];
-            header("Location: superadmin_dashboard.php");
-            exit();
-        } elseif (!empty($employee)) {
-            $_SESSION['user_type'] = "employee";
-            $_SESSION['user_id']   = $employee['emp_id'];
-            $_SESSION['name']      = $employee['name'];
-            if($employee['role']==1){
-                header("Location: admin_dashboard.php");
+        if (!empty($employee)) {
+            $_SESSION['company_id'] =$employee['Company_ID'];
+            $_SESSION['user_id']   = $employee['Emp_ID'];
+            $_SESSION['name']      = $employee['Name'];
+            $_SESSION['email']      = $employee['Email'];
+            if($employee['priority']==1){
+                $_SESSION['user_type'] = "superadmin";
+                header("Location: ../company/dashboard.php");
             }
-            if($employee['role']==2){
-                header("Location: employee_dashboard.php");
+            if($employee['priority']==2){
+                $_SESSION['user_type'] = "employee";
+                header("Location: ../employee/dashboard.php");
             }
-            if($employee['role']==3){
-                header("Location: receptionist_dashboard.php");
+            if($employee['priority']==3){
+                $_SESSION['user_type'] = "client";
+                header("Location: ../employee/dashboard.php");
             }
             exit();
         } elseif (!empty($client)) {
+            $_SESSION['email']      = $client['Email'];
             $_SESSION['user_type'] = "client";
             $_SESSION['user_id']   = $client['client_id'];
             $_SESSION['name']      = $client['name'];
-            header("Location: client_dashboard.php");
+            header("Location: ../client/dashboard.php");
             exit();
         } else {
             $error = "Invalid email or password!";
@@ -97,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <button type="submit">Log In</button>
-        <p>Don’t have an account? <a href="sign_up.php">Sign up</a></p>
+        <p>Don’t have an account? <a href="sign up.php">Sign up</a></p>
     </form>
 </body>
 </html>

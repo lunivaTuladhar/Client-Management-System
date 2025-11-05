@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>My appointments</title>
+    <title>View own appointment</title>
         <link rel="stylesheet" href="../style/button.css">
         <link rel="stylesheet" href="../style/Heading.css">
 
@@ -121,7 +121,20 @@
 
 <div id="top">
     <div id="topic">
-        <h3 style="color:2D2D2D ">My Appointments</h3>
+        <h3 style="color:2D2D2D ">Appointments</h3>
+                <div class="toggle-container">
+                    <button class="toggle-option active" onclick="setActive(this)" style="font-size:.7rem">All</button>
+                    <button class="toggle-option" onclick="setActive(this)"style="font-size:.7rem">Approved</button>
+                    <button class="toggle-option" onclick="setActive(this)"style="font-size:.7rem">Requests</button>
+                </div>
+
+                <script>
+                    function setActive(element) {
+                        const buttons = document.querySelectorAll('.toggle-option');
+                        buttons.forEach(btn => btn.classList.remove('active'));
+                        element.classList.add('active');
+                    }
+                </script>
     </div>    
 </div>
 
@@ -136,10 +149,9 @@
     <table width="100%">
         <thead >
             <th>SN</th>
-            <th>Company</th>
+            <th>Name</th>
             <th>Date</th>
             <th>Time</th>
-            <th>With</th>
             <th>Status</th>
             <th></th>
         </thead>
@@ -149,7 +161,6 @@
             <td>client name</td>
             <td>aug 12</td>
             <td>9;00</td>
-            <td>Dr.kumar</td>
             <td>confrimed</td>
             <td><a href="#">View Details</a></td>
             

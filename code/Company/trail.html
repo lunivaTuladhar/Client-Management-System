@@ -1,0 +1,233 @@
+<?php
+session_start();
+if(!isset($_SESSION['user_type'])){
+    header("location:../login/log in.php");
+    exit();
+}
+
+include("../db.php"); // Database connection
+$company_id = $_SESSION['company_id'];
+
+// Fetch logged-in user's info
+$emp_name = "USER";
+if (isset($_SESSION['email'])) {
+    $email = $_SESSION['email'];
+    $res = $conn->query("SELECT Name, Profile FROM employee WHERE Email='$email' LIMIT 1");
+    if ($res && $res->num_rows > 0) {
+        $user = $res->fetch_assoc();
+        $emp_name = ucfirst($user['Name']);
+        $profile_pic = $user['Profile'] ? $user['Profile'] : "../images/default_profile.png";
+    } else {
+        $profile_pic = "../images/default_profile.png";
+    }
+} else {
+    $profile_pic = "../images/default_profile.png";
+}
+
+// Fetch employee data for left table
+$emp_query = "SELECT Emp_ID, Name, Phone, Role FROM employee WHERE Company_ID = $company_id ORDER BY Emp_ID ASC";
+$emp_result = $conn->query($emp_query);
+
+// Fetch appointment data for right table
+$appt_sql = "SELECT ba.Appt_ID, ba.Date, ba.Time, ba.Status,
+                    c.Name AS Client_Name,
+                    e.Name AS Employee_Name
+             FROM book_appt ba
+             LEFT JOIN client c ON ba.Client_ID = c.Client_ID
+             LEFT JOIN employee e ON ba.Emp_ID = e.Emp_ID
+             WHERE ba.Company_ID = ?
+             ORDER BY ba.Date DESC, ba.Time ASC";
+$stmt = $conn->prepare($appt_sql);
+$stmt->bind_param("i", $company_id);
+$stmt->execute();
+$appt_result = $stmt->get_result();
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../style/button.css">
+    <link rel="stylesheet" href="../style/Heading.css">
+    <title>Dashboard</title>
+    <style>
+        /* General layout */
+        #whole_container { display:flex; gap:12px; background-color:#F5F3F3; margin-top:12px; }
+        #left_container { height: 90vh; padding:24px 0 0 0; background-color:#F5F3F3; }
+        #right_container { background-color:#F5F3F3; width: 600px; margin-right:12px; }
+        .profile { border-radius:50%; margin-top:1%; background-size: cover; background-repeat: no-repeat; }
+        #welcome { background-color:white; width:700px; margin-left:70px; margin-top:24px; display:flex; justify-content: space-between; align-items:center; padding:8px 12px; border-radius:12px; height:50px; }
+        #welcome h2 { font-weight:bold; }
+        #timetable { margin-left:70px; padding:8px 12px; width:700px; margin-top:12px; border-radius:12px; }
+        table { background-color:#F5F3F3; padding:10px; border-radius:12px; width:100%; border-collapse:collapse; }
+        th, td { padding:12px; border-bottom:1px solid #ccc; }
+        th { background-color: rgba(14,62,217,0.2); text-align:left; color: rgba(14,62,217,0.9); }
+        tr:hover { background-color:#eaeaea; }
+        thead th:first-child { border-top-left-radius:12px; border-bottom-left-radius:12px; }
+        thead th:last-child { border-top-right-radius:12px; border-bottom-right-radius:12px; }
+        #top-div { margin-top:30px; display:flex; background:none; border-radius:25px; }
+        #top-div button { font-size:0.73rem; }
+        .toggle-container { display:flex; border:1px solid #ccc; border-radius:35px; overflow:hidden; background-color:#f9f9f9; }
+        .toggle-option { padding:8px 0px; border:none; background:none; cursor:pointer; outline:none; color:#555; transition:all 0.3s ease; width:70px; height:35px; }
+        .toggle-option:not(:last-child) { border-right:1px solid #ddd; }
+        .toggle-option.active { background-color:#dbe3ff; color:#2563eb; border-radius:20px; }
+        .add { margin-left:24px; width:210px; }
+        .right-bottom { margin-top:12px; height:auto; padding:12px; border-radius:12px; background:white; }
+        .right-bottom h3 { margin:0px; margin-bottom:12px; }
+    </style>
+</head>
+
+<body>
+<?php include ("../fixed/sidebar.php"); ?>
+<div id="whole_container">
+
+  <!-- Left: Employees -->
+  <div id="left_container">
+    <div id="welcome">
+        <h2>WELCOME, <?php echo strtoupper($emp_name); ?></h2>
+        <img src="<?php echo $profile_pic; ?>" alt="Profile Picture" height="40px" width="40px" class="profile">
+    </div>
+
+    <div id="timetable">
+        <h3>Employees</h3>
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Available</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php
+            if ($emp_result && $emp_result->num_rows > 0) {
+                while ($row = $emp_result->fetch_assoc()) {
+                    echo "<tr>
+                            <td>{$row['Emp_ID']}</td>
+                            <td>{$row['Name']}</td>
+                            <td>{$row['Phone']}</td>
+                            <td>{$row['Role']}</td>
+                            <td>9:00-10:00</td>
+                          </tr>";
+                }
+            } else {
+                echo "<tr><td colspan='5' style='text-align:center;'>No employees found</td></tr>";
+            }
+            ?>
+            </tbody>
+        </table>
+    </div>
+  </div>
+
+  <!-- Right: Appointments -->
+  <div id="right_container">
+    <div id="top-div">
+      <div class="toggle-container">
+          <button class="toggle-option active" onclick="setActive(this)">All</button>
+          <button class="toggle-option" onclick="setActive(this)">Approved</button>
+          <button class="toggle-option" onclick="setActive(this)">Requests</button>
+      </div>
+      <button type="button" class="add" onclick="window.location='AppointmentAdd.php'">Add Appointment</button>
+    </div>
+
+    <script>
+      function setActive(element) {
+        const buttons = document.querySelectorAll('.toggle-option');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+      }
+    </script>
+ <!-- Calendar -->
+    <div class="right-bottom">
+      <h3>Calendar</h3>
+      <div class="mycal-container">
+        <div class="mycal-header">
+          <button class="mycal-btn" id="mycal-prev">◀</button>
+          <div id="cal-indicator"><span id="mycal-month"></span> <span id="mycal-year"></span></div>
+          <button class="mycal-btn" id="mycal-next">▶</button>
+        </div>
+        <div class="mycal-weekdays">
+          <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+        </div>
+        <div class="mycal-days" id="mycal-days"></div>
+      </div>
+      <script>
+      (function(){
+        const monthNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        let viewDate=new Date();
+        const monthEl=document.getElementById('mycal-month');
+        const yearEl=document.getElementById('mycal-year');
+        const daysEl=document.getElementById('mycal-days');
+        const prev=document.getElementById('mycal-prev');
+        const next=document.getElementById('mycal-next');
+        function render(){
+          const year=viewDate.getFullYear();
+          const month=viewDate.getMonth();
+          monthEl.textContent=monthNames[month];
+          yearEl.textContent=year;
+          daysEl.innerHTML='';
+          const first=new Date(year,month,1);
+          const start=first.getDay();
+          const days=new Date(year,month+1,0).getDate();
+          for(let i=0;i<start;i++){daysEl.appendChild(document.createElement('div'));}
+          const today=new Date();
+          for(let d=1;d<=days;d++){
+            const cell=document.createElement('div');
+            cell.textContent=d;
+            cell.className='mycal-day';
+            const thisDate=new Date(year,month,d);
+            if(thisDate.toDateString()===today.toDateString()){cell.classList.add('mycal-today');}
+            cell.onclick=()=>location.href='otherpage.php?date='+thisDate.toISOString().split('T')[0];
+            daysEl.appendChild(cell);
+          }
+        }
+        prev.onclick=()=>{viewDate.setMonth(viewDate.getMonth()-1);render();};
+        next.onclick=()=>{viewDate.setMonth(viewDate.getMonth()+1);render();};
+        render();
+      })();
+      </script>
+    </div>
+
+    <div class="right-bottom">
+      <h3>Appointment Requests / History</h3>
+      <table>
+          <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Client Name</th>
+                  <th>Employee Name</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                  <th>Details</th>
+              </tr>
+          </thead>
+          <tbody>
+          <?php
+          if ($appt_result && $appt_result->num_rows > 0) {
+              while ($row = $appt_result->fetch_assoc()) {
+                  echo "<tr>
+                          <td>{$row['Appt_ID']}</td>
+                          <td>{$row['Client_Name']}</td>
+                          <td>{$row['Employee_Name']}</td>
+                          <td>{$row['Date']}</td>
+                          <td>{$row['Time']}</td>
+                          <td>{$row['Status']}</td>
+                          <td><a href='AppointmentDetails.php?Appt_ID={$row['Appt_ID']}'>View</a></td>
+                        </tr>";
+              }
+          } else {
+              echo "<tr><td colspan='7' style='text-align:center;'>No appointments found</td></tr>";
+          }
+          ?>
+          </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+
+<?php $conn->close(); ?>
