@@ -6,6 +6,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $contact  = $_POST['contact'] ;
     $email    = $_POST['email'] ;
     $password = $_POST['password'] ;
+    $address = $_POST['address'] ;
     $hasOrg   = isset($_POST['checkbox']) ? 1 : 0;
     if ($hasOrg) {
         // Save data into SESSION instead of DB
@@ -13,14 +14,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['contact'] =  $contact;
         $_SESSION['email'] =  $email;
         $_SESSION['password'] =  $password;
+        $_SESSION['address'] = $address;
         
         // Redirect to company registration page
         header("Location: ../Company/register_company.php");
         exit();
     } else {
         // Insert into client table directly
-        $sql = "INSERT INTO client (name, password, email, phone) 
-                VALUES ('$name', '$password', '$email', '$contact')";
+        $sql = "INSERT INTO client (name, password, email, phone, address) 
+                VALUES ('$name', '$password', '$email', '$contact', '$address')";
         if ($conn->query($sql) === TRUE) {
             header("Location: log in.php");
             exit();
@@ -29,6 +31,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
+
 ?>
 <style>
     #checkbox{

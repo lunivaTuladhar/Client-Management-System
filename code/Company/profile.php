@@ -10,20 +10,21 @@
     $email = $_SESSION['email'];
     $company_id= $_SESSION['company_id'];
     // Fetch employee info
-    $employee_query = $conn->prepare("SELECT Emp_ID, Name,DOB, Email, Phone, Address, Profile, Password FROM employee WHERE Email=? LIMIT 1");
+    $employee_query = $conn->prepare("SELECT Emp_ID, Name, DOB, Email, Phone, Address, Profile, Password FROM employee WHERE Email=? LIMIT 1");
     $employee_query->bind_param("s", $email);
     $employee_query->execute();
     $employee_result = $employee_query->get_result();
-
+    
     if($employee_result->num_rows > 0){
         $employee = $employee_result->fetch_assoc();
+    
         $id = $employee['Emp_ID'];
         $DOB = $employee['DOB'];
         $name = $employee['Name'];
         $phone = $employee['Phone'];
-        $address = $employee['Address'];
+        $address = $employee['Address']; 
         $db_password = $employee['Password'];
-        $profile_pic = $employee['Profile'] ? $employee['Profile'] : "../images/default_profile.png";
+        $profile_pic = !empty($employee['Profile']) ? $employee['Profile'] : "../images/default_profile.png";
     } else {
         $name = "User";
         $phone = "";
@@ -38,7 +39,7 @@
         $new_address = $_POST['address'];
         $new_date = $_POST['DOB'];
         $update_info = $conn->prepare("UPDATE employee SET Name=?, Phone=?, Address=?,DOB=? WHERE Emp_ID=?");
-        $update_info->bind_param("ssssi", $new_name, $new_phone, $new_address,$new_date, $id,);
+        $update_info->bind_param("ssssi", $new_name, $new_phone, $new_address,$new_date, $id);
         $update_info->execute();
         
         $name = $new_name;
@@ -78,7 +79,7 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
         $new = $_POST['new_password'];
 
         if($old == $db_password){
-            $update_pass = $conn->prepare("UPDATE employee SET Password=? WHERE employee_ID=?");
+            $update_pass = $conn->prepare("UPDATE employee SET Password=? WHERE Emp_ID=?");
             $update_pass->bind_param("si", $new, $id);
             $update_pass->execute();
             $msg = "Password updated successfully!";
@@ -303,3 +304,4 @@ function closePassModal(){ document.getElementById("passModal").style.display = 
 
 </body>
 </html>
+

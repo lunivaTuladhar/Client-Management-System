@@ -90,36 +90,54 @@ include('../db.php'); // your database connection
                     <th>Email</th>
                     <th>Start Time</th>
                     <th>End Time</th>
-                    <th>More</th>
+                    <th>Days</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-            <?php $company_id=$_SESSION['company_id'];
-            // Fetch timetable details
-            $sql = "SELECT e.Emp_ID, e.Name AS EmpName, e.Email, e.Phone, e.Role,
-                           c.Name AS Name, ts.Start_Time, ts.End_Time
-                    FROM timetable t
-                    INNER JOIN employee e ON t.Emp_ID = e.Emp_ID
-                    INNER JOIN company c ON t.Company_ID = c.Company_ID AND c.Company_ID = $company_id
-                    INNER JOIN time_stamp ts ON t.Time_ID = ts.Time_ID
-                    ORDER BY e.Name ASC, ts.Start_Time ASC";
+            <?php 
+$company_id = $_SESSION['company_id'];
 
-            $result = $conn->query($sql);
+// Fetch timetable details including days
+$sql = "SELECT e.Emp_ID, e.Name AS EmpName, e.Email,
+               ts.Start_Time, ts.End_Time,
+               t.Sun, t.Mon, t.Tue, t.Wed, t.Thu, t.Fri, t.Sat
+        FROM timetable t
+        INNER JOIN employee e ON t.Emp_ID = e.Emp_ID
+        INNER JOIN company c ON t.Company_ID = c.Company_ID 
+            AND c.Company_ID = $company_id
+        INNER JOIN time_stamp ts ON t.Time_ID = ts.Time_ID
+        ORDER BY e.Name ASC, ts.Start_Time ASC";
 
-            if($result && $result->num_rows > 0){
-                while($row = $result->fetch_assoc()){
-                    echo "<tr>";
-                    echo "<td>".htmlspecialchars($row['EmpName'])."</td>";
-                    echo "<td>".htmlspecialchars($row['Email'])."</td>";
-                    echo "<td>".htmlspecialchars($row['Start_Time'])."</td>";
-                    echo "<td>".htmlspecialchars($row['End_Time'])."</td>";
-                    echo "<td><a href='TimetableDetail.php?emp_id=".$row['Emp_ID']."'>View</a></td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='8' style='text-align:center'>No timetable assigned</td></tr>";
-            }
-            ?>
+$result = $conn->query($sql);
+
+if($result && $result->num_rows > 0){
+    while($row = $result->fetch_assoc()){
+
+        // Prepare days array
+        $days = [];
+        if($row['Sun']) $days[] = 'Sun';
+        if($row['Mon']) $days[] = 'Mon';
+        if($row['Tue']) $days[] = 'Tue';
+        if($row['Wed']) $days[] = 'Wed';
+        if($row['Thu']) $days[] = 'Thu';
+        if($row['Fri']) $days[] = 'Fri';
+        if($row['Sat']) $days[] = 'Sat';
+
+        echo "<tr>";
+        echo "<td>".htmlspecialchars($row['EmpName'])."</td>";
+        echo "<td>".htmlspecialchars($row['Email'])."</td>";
+        echo "<td>".htmlspecialchars($row['Start_Time'])."</td>";
+        echo "<td>".htmlspecialchars($row['End_Time'])."</td>";
+        echo "<td>".(!empty($days) ? implode(", ", $days) : "No Days Selected")."</td>";
+        echo "</tr>";
+    }
+} else {
+    echo "<tr><td colspan='5' style='text-align:center'>No timetable assigned</td></tr>";
+}
+
+?>
+
             </tbody>
         </table>
     </div>
