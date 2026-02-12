@@ -1,7 +1,7 @@
 <?php
 // Database connection
 $conn = new mysqli("localhost", "root", "", "cms");
-
+session_start();
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -14,21 +14,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone = $_POST['phone'];
     $role = $_POST['role'];
     $address = $_POST['address'];
-    $priority = $_POST['priority'];
+    $password = $_POST['password'];
 
-    // You can set company ID manually or get from session if login system exists
-    $company_id = 1;
+    $company_id = $_SESSION['company_id'];
 
-    // Default password for new employee (can be changed later)
-    $password = password_hash("P@ss1234", PASSWORD_DEFAULT);
+    // 🔹 CHECK UNIQUE EMAIL USING SELECT
+    $check = "SELECT Email FROM employee WHERE Email = '$email'";
+    $result = $conn->query($check);
 
-    $sql = "INSERT INTO employee (Name, Email, Phone, Role, Address, Company_ID, Password) 
-            VALUES ('$name', '$email', '$phone', '$role', '$address', '$company_id', '$password')";
-
-    if ($conn->query($sql)) {
-        echo "<script>alert('Employee added successfully!'); window.location='EmployeeList.php';</script>";
+    if ($result->num_rows > 0) {
+        echo "<script>alert('Email already exists!');</script>";
     } else {
-        echo "<script>alert('Error adding employee: " . $conn->error . "');</script>";
+
+        $sql = "INSERT INTO employee 
+                (Name, Email, Phone, Role, Address, Company_ID, Password) 
+                VALUES 
+                ('$name', '$email', '$phone', '$role', '$address', '$company_id', '$password')";
+
+        if ($conn->query($sql)) {
+            echo "<script>alert('Employee added successfully!'); 
+                  window.location='EmployeeList.php';</script>";
+        } else {
+            echo "<script>alert('Error adding employee');</script>";
+        }
     }
 }
 
@@ -90,7 +98,7 @@ $conn->close();
     </style>
 </head>
 <body>
-    <form method="POST" align="center">
+    <form method="POST" name="empForm" onsubmit="return validateForm()" align="center">
         <h3>Add Employee</h3><br>
         <div id="add_emp">
             <!-- Left Column -->
@@ -104,9 +112,8 @@ $conn->close();
                 <label>Role:</label><br>
                 <select name="role" required>
                     <option value="admin">admin</option>
-                    <option value="doctor">doctor</option>
-                    <option value="nurse">nurse</option>
-                    <option value="receptionist">receptionist</option>
+                    <option value="employee">employee</option>
+                    
                 </select>
             </div>
 
@@ -117,19 +124,51 @@ $conn->close();
 
                 <label>Address:</label><br>
                 <input type="text" name="address" placeholder="enter employee address" required/><br>
-
-                <label>Priority:</label><br>
-                <select name="priority" required>
-                    <option value="high">high</option>
-                    <option value="medium">medium</option>
-                    <option value="low">low</option>
-                </select>
+                
+                <label>Password:</label><br>
+                <input type="password" name="password" placeholder="enter employee password" required/><br>
+               
             </div>
         </div><br>
         <div id="button">
             <button type="submit" id="added">Add</button>
-            <button type="button" id="cancel" onclick="window.location='EmployeeView.php'">Cancel</button>
+            <button type="button" id="cancel" onclick="window.location='EmployeeList.php'">Cancel</button>
         </div>
     </form>
 </body>
+<script>
+function validateForm() {
+    let name = document.forms["empForm"]["name"].value;
+    let email = document.forms["empForm"]["email"].value;
+    let phone = document.forms["empForm"]["phone"].value;
+    let password = document.forms["empForm"]["password"].value;
+
+    let namePattern = /^[A-Za-z ]+$/;
+    let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    let phonePattern = /^[0-9]{10}$/;
+
+    if (!namePattern.test(name)) {
+        alert("Name must contain only letters and spaces");
+        return false;
+    }
+
+    if (!emailPattern.test(email)) {
+        alert("Please enter a valid email address");
+        return false;
+    }
+
+    if (!phonePattern.test(phone)) {
+        alert("Phone number must be exactly 10 digits");
+        return false;
+    }
+
+    if (password.length < 6) {
+        alert("Password must be at least 6 characters long");
+        return false;
+    }
+
+    return true;
+}
+</script>
+
 </html>

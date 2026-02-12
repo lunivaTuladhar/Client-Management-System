@@ -1,11 +1,11 @@
 <?php
 session_start();
 include('../db.php'); // your database connection
-
+$company_id =$_SESSION['company_id'];
 // Handle AJAX request to get employee name
 if(isset($_GET['get_emp_name'])){
     $emp_id = intval($_GET['get_emp_name']);
-    $res = $conn->query("SELECT Name FROM employee WHERE Emp_ID = $emp_id");
+    $res = $conn->query("SELECT Name FROM employee WHERE Emp_ID = $emp_id and Company_ID =$company_id");
     if($res->num_rows > 0){
         echo $res->fetch_assoc()['Name'];
     } else {
@@ -213,7 +213,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     <form method="POST" align="center">
         <h3>Add Timetable</h3><br>
         <div id="add_emp">
-            <div style="width:100%;display:flex;justify-content:space-between;">
+            <div style="width:100%;display:flex;justify-content:space-between;gap:24px;">
                 <div style="width:50%">
                     <label>Employee id: </label>
                     <input type="number" name="emp_id" id="emp_id" oninput="fetchEmpName()" required>

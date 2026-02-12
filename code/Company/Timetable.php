@@ -10,6 +10,8 @@ include('../db.php'); // your database connection
     <link rel="stylesheet" href="../style/form.css">
     <link rel="stylesheet" href="../style/Heading.css">
     <style>
+                input{height:32px;width:300px;margin:0;}
+
         #content{
             padding: 12px;
             margin-left:74px;
@@ -64,6 +66,9 @@ include('../db.php'); // your database connection
             border-top-right-radius: 12px;
             border-bottom-right-radius: 12px;
         }
+        h3{
+            margin:0px;
+        }
     </style>
 </head>
 <body>
@@ -89,13 +94,13 @@ include('../db.php'); // your database connection
                 </tr>
             </thead>
             <tbody>
-            <?php
+            <?php $company_id=$_SESSION['company_id'];
             // Fetch timetable details
             $sql = "SELECT e.Emp_ID, e.Name AS EmpName, e.Email, e.Phone, e.Role,
                            c.Name AS Name, ts.Start_Time, ts.End_Time
                     FROM timetable t
                     INNER JOIN employee e ON t.Emp_ID = e.Emp_ID
-                    INNER JOIN company c ON t.Company_ID = c.Company_ID
+                    INNER JOIN company c ON t.Company_ID = c.Company_ID AND c.Company_ID = $company_id
                     INNER JOIN time_stamp ts ON t.Time_ID = ts.Time_ID
                     ORDER BY e.Name ASC, ts.Start_Time ASC";
 

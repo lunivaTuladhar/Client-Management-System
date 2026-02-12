@@ -1,3 +1,43 @@
+<?php
+session_start();
+
+$conn = new mysqli("localhost", "root", "", "cms");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if (!isset($_GET['id'])) {
+    die("Invalid appointment");
+}
+
+$appt_id = $_GET['id'];
+
+$sql = "
+SELECT 
+c.Name as client,
+    b.Appt_ID,
+    b.Date,
+    b.Time,
+    b.Reason,
+    b.Status,
+    e.Name AS EmpName
+FROM book_appt b
+INNER JOIN employee e 
+ON b.Emp_ID = e.Emp_ID
+INNER JOIN client c 
+on c.Client_ID =b.Client_ID
+WHERE b.Appt_ID = '$appt_id'and b.status ='Approved'
+";
+
+$result = $conn->query($sql);
+
+if ($result->num_rows == 0) {
+    die("Appointment not found");
+}
+
+$appt = $result->fetch_assoc();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -144,82 +184,29 @@
         <h3>Appointments</h3>
         </div>
         <div id="content">
-            <div class="appt_details"><label>Name:</label><p>Client's name</p></div>
-            <div class="appt_details"><label>Date:</label><p>Date</p></div>
-            <div class="appt_details"><label>Time:</label><p>Time</p></div>
-            <div class="appt_details"><label>Reason:</label><p>Reason sddnenejd kejnejndje kjdejdf ekjbdjkef kjbfjef kfkjfksdfkjhfenf kjbfjdfkjdbkjfuofhqof fb Reason sddnenejd kejnejndje kjdejdf ekjbdjkef kjbfjef kfkjfksdfkjhfenf kjbfjdfkjdbkjfuofhqof fb Reason sddnenejd kejnejndje kjdejdf ekjbdjkef kjbfjef kfkjfksdfkjhfenf kjbfjdfkjdbkjfuofhqof fb Reason sddnenejd kejnejndje kjdejdf ekjbdjkef kjbfjef kfkjfksdfkjhfenf kjbfjdfkjdbkjfuofhqof fb</p></div>
+           <div class="appt_details">
+    <label>Name:</label>
+    <p><?php echo htmlspecialchars($appt['client']); ?></p>
+</div>
 
-            <div id="button">
-            <button id="openReasonPopupBtn" class="open-btn">Request For Reassignment</button>
-            </div>
-            <!-- Popup Overlay -->
-            <div class="popup-overlay" id="reasonPopupOverlay">
-                <div class="popup-box">
-                    <h4>Reason for reassignment</h4>
-                    <textarea id="reasonInput" placeholder="Type your reason here..." rows="4"></textarea>
-                    <div class="popup-buttons">
-                        <button class="submit-btn" id="submitReasonBtn">Submit</button>
-                        <button class="back-btn" id="closeReasonPopupBtn">Cancel</button>
-                    </div>
-                </div>
-            </div>
+<div class="appt_details">
+    <label>Date:</label>
+    <p><?php echo htmlspecialchars($appt['Date']); ?></p>
+</div>
+
+<div class="appt_details">
+    <label>Time:</label>
+    <p><?php echo htmlspecialchars($appt['Time']); ?></p>
+</div>
+
+<div class="appt_details">
+    <label>Reason:</label>
+    <p><?php echo nl2br(htmlspecialchars($appt['Reason'])); ?></p>
+</div>
+            
         </div>
     </div>
 </div>
-<script>
-function decline() {
-    
-            let reason = prompt("Please enter the reason for declining:");
-            if (reason) {
-                alert("Appointment declined for reason: " + reason);
-            } else if (reason === "") {
-                alert("Decline reason cannot be empty.");
-            } else {
-                alert("Decline canceled.");
-            }
-        }
-    const reasonPopupOverlay = document.getElementById('reasonPopupOverlay');
-    const openReasonPopupBtn = document.getElementById('openReasonPopupBtn');
-    const closeReasonPopupBtn = document.getElementById('closeReasonPopupBtn');
-    const submitReasonBtn = document.getElementById('submitReasonBtn');
-    const reasonInput = document.getElementById('reasonInput');
 
-    // Show popup
-    openReasonPopupBtn.addEventListener('click', () => {
-        reasonPopupOverlay.classList.add('show');
-        reasonInput.focus();
-    });
-
-    // Close popup
-    closeReasonPopupBtn.addEventListener('click', () => {
-        reasonPopupOverlay.classList.remove('show');
-        reasonInput.value = '';
-    });
-
-    // Close when clicking outside box
-    reasonPopupOverlay.addEventListener('click', (e) => {
-        if (e.target === reasonPopupOverlay) {
-            reasonPopupOverlay.classList.remove('show');
-            reasonInput.value = '';
-        }
-    });
-
-    // Handle submit
-    submitReasonBtn.addEventListener('click', () => {
-        const reason = reasonInput.value.trim();
-        if (reason === '') {
-            alert('Please enter your reason before submitting.');
-            reasonInput.focus();
-            return;
-        }
-
-        // Example: You can send it to PHP via GET or POST here
-        alert('Your request has been submitted.\nReason: ' + reason);
-
-        // Reset and close
-        reasonInput.value = '';
-        reasonPopupOverlay.classList.remove('show');
-    });
-</script>
 </body>
 </html>

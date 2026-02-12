@@ -90,7 +90,7 @@ $company_id = $_SESSION['company_id'];
         }
         #search-filter {
             display: flex;
-            margin: 0px;
+            margin-right: 24px;
             gap: 8px;
         }
         #role_select {
@@ -117,16 +117,12 @@ $company_id = $_SESSION['company_id'];
                             <?php
                             // Maintain values on reload
                             $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-                            $role = isset($_GET['role']) ? $_GET['role'] : 'all';
+                           
+                            
                             ?>
                             <input type="text" name="search" placeholder="Search by name or email"
                                    value="<?php echo htmlspecialchars($search); ?>">
-                            <select id="role_select" name="role" onchange="this.form.submit()">
-                                <option value="all" <?php if ($role == 'all') echo 'selected'; ?>>All</option>
-                                <option value="admin" <?php if ($role == 'admin') echo 'selected'; ?>>Admin</option>
-                                <option value="staff" <?php if ($role == 'staff') echo 'selected'; ?>>Staff</option>
-                                <option value="doctor" <?php if ($role == 'doctor') echo 'selected'; ?>>Doctor</option>
-                            </select>
+                            
                         </div>
                 </form>
             </div>

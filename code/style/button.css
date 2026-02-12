@@ -8,6 +8,10 @@ button{
     color: white;
     vertical-align: middle;
     cursor:pointer;
+
+}
+button:hover{
+    background-color:rgb(12, 52, 183);
 }
 svg{
     height:24px;

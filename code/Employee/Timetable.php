@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <html>
 <head>
     <title>Employee View</title>
@@ -20,6 +23,11 @@
         justify-content: space-between;
         margin-bottom:12px;
         align-items: center;
+    }
+    #top button {
+        right:0;
+        width:150px;
+
     }
     #top-right{
         width: auto;
@@ -96,21 +104,79 @@
 
             <div id="top">
                 <h3 style="color:2D2D2D ">Timetable</h3>
+               
             </div>
 
-            <table width="100%">
-                <thead >
-                    <th>Days</th>
-                    <th>Start</th>
-                    <th>End</th>
-                </thead>
-                <tr>
-                    <td>Sunday</td>
-                    <td>9:00</td>
-                    <td>9:00</td>
-                    
-                </tr>
-            </table>
+           <table width="100%">
+    <thead>
+        <tr>
+            <th>Day</th>
+            <th>Start Time - End Time</th>
+        </tr>
+    </thead>
+
+    <tbody>
+<?php
+$emp_id = $_SESSION['user_id'];
+
+// fetch all time slots for this employee
+$sql = "
+    SELECT 
+        ts.sun, ts.mon, ts.tue, ts.wed, ts.thu, ts.fri, ts.sat,
+        t.Start_Time, t.End_Time
+    FROM timetable ts
+    INNER JOIN time_stamp t ON t.Time_ID = ts.Time_ID
+    WHERE ts.Emp_ID = $emp_id
+";
+
+$res = $conn->query($sql);
+
+// prepare static days
+$days = [
+    'Sunday'    => [],
+    'Monday'    => [],
+    'Tuesday'   => [],
+    'Wednesday' => [],
+    'Thursday'  => [],
+    'Friday'    => [],
+    'Saturday'  => []
+];
+
+if ($res->num_rows > 0) {
+    while ($row = $res->fetch_assoc()) {
+
+        $time = $row['Start_Time'] . " - " . $row['End_Time'];
+
+        if ($row['sun'] == 1) $days['Sunday'][] = $time;
+        if ($row['mon'] == 1) $days['Monday'][] = $time;
+        if ($row['tue'] == 1) $days['Tuesday'][] = $time;
+        if ($row['wed'] == 1) $days['Wednesday'][] = $time;
+        if ($row['thu'] == 1) $days['Thursday'][] = $time;
+        if ($row['fri'] == 1) $days['Friday'][] = $time;
+        if ($row['sat'] == 1) $days['Saturday'][] = $time;
+    }
+}
+
+// print static rows
+foreach ($days as $day => $times) {
+
+    if (count($times) > 0) {
+        $timeText = implode(", ", $times);
+    } else {
+        $timeText = "-";
+    }
+
+    echo "
+    <tr>
+        <td>$day</td>
+        <td colspan='2'>$timeText</td>
+    </tr>";
+}
+?>
+</tbody>
+
+</table>
+
         </div>
     </div>
 </body>

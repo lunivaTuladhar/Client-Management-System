@@ -1,9 +1,16 @@
-    <?php
+<?php
+// Get current file name
+$current_page = basename($_SERVER['PHP_SELF']);
+    if (!$_SESSION['user_type']) {
+        header("location:../login/log in.php");
+    }
     $user_type=$_SESSION['user_type'];
+
     include ("../db.php");
     // Logged-in user info
 $emp_name = $_SESSION['name'] ;
 $profile_pic = "";
+if($user_type!="client"){
 if(isset($_SESSION['email'])){
     $email = $_SESSION['email'];
     $res = $conn->query("SELECT Name, Profile FROM employee WHERE Email='$email' LIMIT 1");
@@ -12,6 +19,18 @@ if(isset($_SESSION['email'])){
         $emp_name = ucfirst($user['Name']);
         $profile_pic = $user['Profile'] ? $user['Profile'] : "../images/default_profile.png";
     }
+}}
+else{
+    
+if(isset($_SESSION['email'])){
+    $email = $_SESSION['email'];
+    $res = $conn->query("SELECT Name, Profile FROM client WHERE Email='$email' LIMIT 1");
+    if($res && $res->num_rows>0){
+        $user = $res->fetch_assoc();
+        $emp_name = ucfirst($user['Name']);
+        $profile_pic = $user['Profile'] ? $user['Profile'] : "../images/default_profile.png";
+    }
+}
 }
     ?>
 
@@ -166,10 +185,6 @@ svg {
         
     </style>
 
-<?php
-// Get current file name
-$current_page = basename($_SERVER['PHP_SELF']);
-?>
 
 <!-- client nav bar -->
 <?php
@@ -177,26 +192,26 @@ if ( $_SESSION['user_type'] == "client") :?>
     <!-- Sidebar (starts collapsed) -->
     <nav id="side_nav" class="collapsed">
         <div class="menu_item">
-            <a href="../Client/Dashboard.php">
+            <a href="../Client/Dashboard.php" class="<?php if ($current_page == 'Dashboard.php') echo'active'; ?>">
                 <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11.336 2.253a1 1 0 0 1 1.328 0l9 8a1 1 0 0 1-1.328 1.494L20 11.45V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7.55l-.336.297a1 1 0 0 1-1.328-1.494zM6 9.67V19h3v-5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v5h3V9.671l-6-5.333zM13 19v-4h-2v4z"/></svg>
             <p>Dashboard</p></a>
         </div>
         
         <div class="menu_item">
-            <a href="../Client/Browse.php">
+            <a href="../Client/list_company.php" class="<?php if ($current_page == 'list_company.php') echo'active'; ?>">
                 <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0s.41-1.08 0-1.49zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14"/></svg>
             <p>Browse Organization</p></a>
         </div>
 
         <div class="menu_item">
-            <a href="../Client/MyAppointment.php">
+            <a href="../Client/MyAppointment.php"class="<?php if ($current_page == 'MyAppointment.php') echo'active'; ?>">
                 <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M8 4h8V2h2v2h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V2h2zM5 8v12h14V8zm2 3h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2zm0 4h2v2h-2zm-4 0h2v2h-2zm-4 0h2v2H7z"/></svg>
             <p>My Appointments</p>
             </a>
         </div>
 
         <div class="menu_item">
-            <a href="../Client/MyHistory.php">
+            <a href="../Client/MyHistory.php"class="<?php if ($current_page == 'MyHistory.php') echo'active'; ?>">
                 <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M9 17H7v-7h2zm4 0h-2V7h2zm4 0h-2v-4h2zm2 2H5V5h14v14.1M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2"/></svg>
                 <p>My History</p>
             </a>
@@ -208,32 +223,27 @@ if ( $_SESSION['user_type'] == "client") :?>
 elseif( $_SESSION['user_type'] == "employee") :?>
 <nav id="side_nav" class="collapsed">
         <div class="menu_item">
-            <a href="../Employee/Dashboard.php">
+            <a href="../Employee/Dashboard.php" class="<?php if ($current_page == 'Dashboard.php') echo'active'; ?>">
                 <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M11.336 2.253a1 1 0 0 1 1.328 0l9 8a1 1 0 0 1-1.328 1.494L20 11.45V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7.55l-.336.297a1 1 0 0 1-1.328-1.494zM6 9.67V19h3v-5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v5h3V9.671l-6-5.333zM13 19v-4h-2v4z"/></svg>
                 <p>Dashboard</p>
             </a>
         </div>
 
         <div class="menu_item">
-            <a href="../Employee/Appointment.php">
+            <a href="../Employee/OwnAppt.php"class="<?php if ($current_page == 'Appointment.php') echo'active'; ?>">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><path fill="currentColor" d="M928 224H768v-56c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v56H548v-56c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v56H328v-56c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v56H96c-17.7 0-32 14.3-32 32v576c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V256c0-17.7-14.3-32-32-32m-40 568H136V296h120v56c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-56h148v56c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-56h148v56c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-56h120zM416 496H232c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h184c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8m0 136H232c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h184c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8m308.2-177.4L620.6 598.3l-52.8-73.1c-3-4.2-7.8-6.6-12.9-6.6H500c-6.5 0-10.3 7.4-6.5 12.7l114.1 158.2a15.9 15.9 0 0 0 25.8 0l165-228.7c3.8-5.3 0-12.7-6.5-12.7H737c-5-.1-9.8 2.4-12.8 6.5"/></svg>
                 <p>Appointment</p>
             </a>
         </div>
 
         <div class="menu_item">
-            <a href="../Employee/Timetable.php">
+            <a href="../Employee/Timetable.php" class="<?php if ($current_page == 'Timetable.php') echo'active'; ?>">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M8 4h8V2h2v2h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V2h2zM5 8v12h14V8zm2 3h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2zm0 4h2v2h-2zm-4 0h2v2h-2zm-4 0h2v2H7z"/></svg>
                 <p>Timetable</p>
             </a>
         </div>
 
-        <div class="menu_item">
-            <a href="../Employee/History.php">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M21 11.11V5a2 2 0 0 0-2-2h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14a2 2 0 0 0 2 2h6.11c1.26 1.24 2.98 2 4.89 2c3.87 0 7-3.13 7-7c0-1.91-.76-3.63-2-4.89M12 3c.55 0 1 .45 1 1s-.45 1-1 1s-1-.45-1-1s.45-1 1-1M5 19V5h2v2h10V5h2v4.68c-.91-.43-1.92-.68-3-.68H7v2h4.1c-.6.57-1.06 1.25-1.42 2H7v2h2.08c-.05.33-.08.66-.08 1c0 1.08.25 2.09.68 3zm11 2c-2.76 0-5-2.24-5-5s2.24-5 5-5s5 2.24 5 5s-2.24 5-5 5m.5-4.75l2.86 1.69l-.75 1.22L15 17v-5h1.5z"/></svg>
-                 <p>History</p>
-            </a>
-        </div>
+        
     </nav>
 
 <!--superadmin nav bar  -->
@@ -255,7 +265,7 @@ elseif( $_SESSION['user_type'] == "superadmin") :?>
         </div>
 
         <div class="menu_item">
-            <a href="../Company/EmployeeList.php" class="<?php if ($current_page == 'Employees.php') echo'active'; ?>">
+            <a href="../Company/EmployeeList.php" class="<?php if ($current_page == 'EmployeeList.php') echo'active'; ?>">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M9 13.75c-2.34 0-7 1.17-7 3.5V19h14v-1.75c0-2.33-4.66-3.5-7-3.5M4.34 17c.84-.58 2.87-1.25 4.66-1.25s3.82.67 4.66 1.25zM9 12c1.93 0 3.5-1.57 3.5-3.5S10.93 5 9 5S5.5 6.57 5.5 8.5S7.07 12 9 12m0-5c.83 0 1.5.67 1.5 1.5S9.83 10 9 10s-1.5-.67-1.5-1.5S8.17 7 9 7m7.04 6.81c1.16.84 1.96 1.96 1.96 3.44V19h4v-1.75c0-2.02-3.5-3.17-5.96-3.44M15 12c1.93 0 3.5-1.57 3.5-3.5S16.93 5 15 5c-.54 0-1.04.13-1.5.35c.63.89 1 1.98 1 3.15s-.37 2.26-1 3.15c.46.22.96.35 1.5.35"/></svg>
                 <p>Employees</p>
             </a>

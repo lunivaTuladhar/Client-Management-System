@@ -1,91 +1,89 @@
 <?php
-    session_start();
-    if(!isset($_SESSION['email'])){
-        header("location:../login/log in.php");
-        exit();
+session_start();
+if(!isset($_SESSION['email'])){
+    header("location:../login/log in.php");
+    exit();
+}
+
+include("../db.php");
+
+$email = $_SESSION['email'];
+
+// Fetch employee info
+$employee_query = $conn->prepare("SELECT Emp_ID, Name,DOB, Email, Phone, Address, Profile, Password FROM employee WHERE Email=? LIMIT 1");
+$employee_query->bind_param("s", $email);
+$employee_query->execute();
+$employee_result = $employee_query->get_result();
+
+if($employee_result->num_rows > 0){
+    $employee = $employee_result->fetch_assoc();
+    $id = $employee['Emp_ID'];
+    $DOB = $employee['DOB'];
+    $name = $employee['Name'];
+    $phone = $employee['Phone'];
+    $address = $employee['Address'];
+    $db_password = $employee['Password'];
+    $profile_pic = $employee['Profile'] ? $employee['Profile'] : "../images/default_profile.png";
+} else {
+    $name = "User";
+    $phone = "";
+    $address = "";
+    $profile_pic = "../images/default_profile.png";
+}
+
+// Update profile info
+if(isset($_POST['save_profile'])){
+    $new_name = $_POST['name'];
+    $new_phone = $_POST['phone'];
+    $new_address = $_POST['address'];
+    $new_date = $_POST['DOB'];
+    $update_info = $conn->prepare("UPDATE employee SET Name=?, Phone=?, Address=?,DOB=? WHERE Emp_ID=?");
+    $update_info->bind_param("ssssi", $new_name, $new_phone, $new_address,$new_date, $id,);
+    $update_info->execute();
+
+    $name = $new_name;
+    $phone = $new_phone;
+    $address = $new_address;
+    $DOB = $new_date;
+    $msg = "Profile updated successfully!";
+}
+
+// Handle profile picture upload
+if(isset($_POST['update_profile_pic'])){
+    if(isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0){
+        $file_tmp = $_FILES['profile_pic']['tmp_name'];
+        $file_name = time() . "_" . basename($_FILES['profile_pic']['name']);
+        $target_dir = "../images/profiles/";
+        if(!is_dir($target_dir)){
+            mkdir($target_dir, 0777, true);
+        }
+        $target_file = $target_dir . $file_name;
+
+        if(move_uploaded_file($file_tmp, $target_file)){
+            $update_pic = $conn->prepare("UPDATE employee SET Profile=? WHERE Emp_ID=?");
+            $update_pic->bind_param("si", $target_file, $id);
+            $update_pic->execute();
+
+            $profile_pic = $target_file;
+            $msg = "Profile picture updated!";
+        }
     }
+}
 
-    include("../db.php");
+// Change password
+if(isset($_POST['change_password'])){
+    $old = $_POST['old_password'];
+    $new = $_POST['new_password'];
 
-    $email = $_SESSION['email'];
-    $company_id= $_SESSION['company_id'];
-    // Fetch employee info
-    $employee_query = $conn->prepare("SELECT Emp_ID, Name,DOB, Email, Phone, Address, Profile, Password FROM employee WHERE Email=? LIMIT 1");
-    $employee_query->bind_param("s", $email);
-    $employee_query->execute();
-    $employee_result = $employee_query->get_result();
-
-    if($employee_result->num_rows > 0){
-        $employee = $employee_result->fetch_assoc();
-        $id = $employee['Emp_ID'];
-        $DOB = $employee['DOB'];
-        $name = $employee['Name'];
-        $phone = $employee['Phone'];
-        $address = $employee['Address'];
-        $db_password = $employee['Password'];
-        $profile_pic = $employee['Profile'] ? $employee['Profile'] : "../images/default_profile.png";
+    if($old == $db_password){
+        $update_pass = $conn->prepare("UPDATE employee SET Password=? WHERE employee_ID=?");
+        $update_pass->bind_param("si", $new, $id);
+        $update_pass->execute();
+        $msg = "Password updated successfully!";
     } else {
-        $name = "User";
-        $phone = "";
-        $address = "";
-        $profile_pic = "../images/default_profile.png";
+        $msg = "Old password is incorrect!";
     }
-
-    // Update profile info
-    if(isset($_POST['save_profile'])){
-        $new_name = $_POST['name'];
-        $new_phone = $_POST['phone'];
-        $new_address = $_POST['address'];
-        $new_date = $_POST['DOB'];
-        $update_info = $conn->prepare("UPDATE employee SET Name=?, Phone=?, Address=?,DOB=? WHERE Emp_ID=?");
-        $update_info->bind_param("ssssi", $new_name, $new_phone, $new_address,$new_date, $id,);
-        $update_info->execute();
-        
-        $name = $new_name;
-        $phone = $new_phone;
-        $address = $new_address;
-        $DOB = $new_date;
-        $msg = "Profile updated successfully!";
-    }
-
-    // Handle profile picture upload
-    if(isset($_POST['update_profile_pic'])){
-        if(isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0){
-            $file_tmp = $_FILES['profile_pic']['tmp_name'];
-            $file_name = time() . "_" . basename($_FILES['profile_pic']['name']);
-            $target_dir = "../images/profiles/";
-            if(!is_dir($target_dir)){
-                mkdir($target_dir, 0777, true);
-            }
-            $target_file = $target_dir . $file_name;
-
-            if(move_uploaded_file($file_tmp, $target_file)){
-                $update_pic = $conn->prepare("UPDATE employee SET Profile=? WHERE Emp_ID=?");
-                $update_pic->bind_param("si", $target_file, $id);
-                $update_pic->execute();
-$update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
-                $update_pic->bind_param("si", $target_file, $company_id);
-                $update_pic->execute();
-                $profile_pic = $target_file;
-                $msg = "Profile picture updated!";
-            }
-        }
-    }
-
-    // Change password
-    if(isset($_POST['change_password'])){
-        $old = $_POST['old_password'];
-        $new = $_POST['new_password'];
-
-        if($old == $db_password){
-            $update_pass = $conn->prepare("UPDATE employee SET Password=? WHERE employee_ID=?");
-            $update_pass->bind_param("si", $new, $id);
-            $update_pass->execute();
-            $msg = "Password updated successfully!";
-        } else {
-            $msg = "Old password is incorrect!";
-        }
-    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -93,14 +91,9 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
     <title>employee Profile</title>
     <link rel="stylesheet" href="../style/button.css">
     <link rel="stylesheet" href="../style/Heading.css">
-    <link rel="stylesheet" href="../style/form.css">
 
     <style>
-        body { 
-            background:#F5F3F3; 
-            margin:0; 
-            padding:30px;
-        }
+        body { background:#F5F3F3; margin:0; padding:30px; }
         .container {
             max-width:500px;
             margin:auto;
@@ -109,33 +102,16 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
             border-radius:12px;
         }
         .profile-pic-container {
-            width:120px; 
-            height:120px; 
-            margin:auto; 
-            position:relative;
+            width:120px; height:120px; margin:auto; position:relative;
         }
-        .profile-pic { 
-            width:120px; 
-            height:120px; 
-            border-radius:50%; 
-            object-fit:cover; 
-        }
+        .profile-pic { width:120px; height:120px; border-radius:50%; object-fit:cover; }
         .upload-btn {
-            position:absolute; 
-            bottom:0; 
-            right:0;
-            width:30px;
-            background:#2563eb;
-            color:white;
-            padding:6px; 
-            border-radius:100%; 
-            cursor:pointer;
+            position:absolute; bottom:0; right:0;width:30px;
+            background:#2563eb; color:white;
+            padding:6px; border-radius:100%; cursor:pointer;
         }
         input {
-            width:100%;
-            border:1px solid #ccc; 
-            border-radius:6px; 
-            margin-bottom:12px;
+            width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; margin-bottom:12px;
         }
         .edit-btn,.save-btn,.cancel-btn,.password-btn {
             width:100%; 
@@ -148,6 +124,7 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
         .edit-btn{ 
             width:150px;
             color:#fff; 
+            margin-bottom:12px;
         }
         .save-btn{ 
             color:#fff; 
@@ -158,6 +135,7 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
             color:#EF1818;
             border :1px solid #EF1818;  
             display:none; 
+            margin-bottom:12px;
         }
         .cancel-btn:hover{
             background-color:rgba(239,24,24,0.4);
@@ -168,30 +146,15 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
             width:50%;
             margin:0;
         }
-        .msg{ 
-            text-align:center; 
-            color:green; 
-        }
+        .msg{ text-align:center; color:green; }
         .modal {
-            display:none; 
-            position:fixed; 
-            top:0; left:0; 
-            width:100%; 
-            height:100%;
-            background:rgba(0,0,0,0.6); 
-            justify-content:center; 
-            align-items:center;
+            display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.6); justify-content:center; align-items:center;
         }
         .modal-content {
-            background:white; 
-            padding:20px; 
-            border-radius:12px;
-            width:300px;
+            background:white; padding:20px; border-radius:12px; width:300px;
         }
-        .close { 
-            float:right; 
-            cursor:pointer; 
-        }
+        .close { float:right; cursor:pointer; }
         #bottom{
             right:0;
             display:flex;
@@ -211,7 +174,6 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
             color:#EF1818;
             border :1px solid #EF1818; 
         }
-        
     </style>
 
 </head>
@@ -247,7 +209,8 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
         <button type="submit" class="save-btn" name="save_profile" id="saveBtn">Save</button>
         <button type="button" class="cancel-btn" id="cancelBtn" onclick="cancelEdit()">Cancel</button>
     </form>
-<div id="bottom">
+
+    <div id="bottom">
     <button class="password-btn" onclick="openPassModal()">Change Password</button>
  <a href="../login/logout.php" class="logout-button" onclick="return confirm('Are you sure you want to logout?')"><button id="logout">Logout</button></a>
 </div>

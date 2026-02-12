@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 if(!isset($_SESSION['user_type'])){
     header("location:../login/log in.php");
@@ -21,18 +22,10 @@ if(isset($_SESSION['email'])){
     }
 }
 
-if(isset($_SESSION['email'])){
-    $email = $_SESSION['email'];
-    $res = $conn->query("SELECT Name, Profile FROM employee WHERE Email='$email' LIMIT 1");
-    if($res && $res->num_rows>0){
-        $user = $res->fetch_assoc();
-        $emp_name = ucfirst($user['Name']);
-        $profile_pic = $user['Profile'] ? $user['Profile'] : "../images/default_profile.png";
-    }
-}
+
 
 // Fetch employees for left timetable
-$emp_query = "SELECT Emp_ID, Name, Phone, Role FROM employee WHERE Company_ID = ? ORDER BY Emp_ID ASC";
+$emp_query = "SELECT Emp_ID, Name, Phone, Role FROM employee WHERE Company_ID = ? and Role!='Admin' ORDER BY Emp_ID ASC";
 $stmt_emp = $conn->prepare($emp_query);
 $stmt_emp->bind_param("i", $company_id);
 $stmt_emp->execute();
@@ -43,8 +36,8 @@ $appt_query = "SELECT ba.Appt_ID, ba.Date, ba.Time, ba.Status, c.Name AS Client_
                FROM book_appt ba
                LEFT JOIN client c ON ba.Client_ID = c.Client_ID
                LEFT JOIN employee e ON ba.Emp_ID = e.Emp_ID
-               WHERE ba.Company_ID = ?
-               ORDER BY ba.Date DESC, ba.Time ASC";
+               WHERE ba.Company_ID = ? and ba.Status !='Completed'
+               ORDER BY ba.Date ASC, ba.Time ASC";
 $stmt_appt = $conn->prepare($appt_query);
 $stmt_appt->bind_param("i", $company_id);
 $stmt_appt->execute();
@@ -101,6 +94,7 @@ $appt_result = $stmt_appt->get_result();
           width:700px; 
           margin-top:12px; 
           border-radius:12px;
+          background-color: white ;
         }
         table{ 
           background-color:#F5F3F3; 
@@ -111,14 +105,13 @@ $appt_result = $stmt_appt->get_result();
         }
         th, td{ 
           padding:12px; 
-          border-bottom:1px solid #ccc; 
         }
         th{ 
           background-color: rgba(14,62,217,0.2); 
           text-align:left; 
           color: rgba(14,62,217,0.9);
         }
-        tr:hover{ background-color:#eaeaea; }
+        
         thead th:first-child{ 
           border-top-left-radius:12px; 
           border-bottom-left-radius:12px; 
@@ -299,7 +292,7 @@ $appt_result = $stmt_appt->get_result();
               cell.className='mycal-day';
               const thisDate=new Date(year,month,d);
               if(thisDate.toDateString()===today.toDateString()){ cell.classList.add('mycal-today'); }
-              cell.onclick=()=>location.href='otherpage.php?date='+thisDate.toISOString().split('T')[0];
+              cell.onclick=()=>location.href='AppointmentList.php?date='+thisDate.toISOString().split('T')[0];
               daysEl.appendChild(cell);
             }
           }
@@ -313,7 +306,7 @@ $appt_result = $stmt_appt->get_result();
 
     <!-- Appointments -->
     <div class="right-bottom">
-      <h3>Appointment Request / History</h3>
+      <h3>Appointment Request</h3>
       <table style="width:100%">
         <thead>
           <tr>

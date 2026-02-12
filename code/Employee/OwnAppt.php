@@ -1,3 +1,29 @@
+<?php
+session_start();
+include ("../db.php");
+$company_id = $_SESSION['company_id'] ?? 1;   // adjust if company is stored in session
+
+$sql = "
+SELECT 
+c.Name as client,
+    b.Appt_ID,
+    b.Date,
+    b.Time,
+    b.Status,
+    e.Name AS EmpName
+FROM book_appt b
+INNER JOIN employee e 
+    ON b.Emp_ID = e.Emp_ID
+    INNER JOIN client c 
+on c.Client_ID =b.Client_ID
+WHERE b.Company_ID = '$company_id' and b.status ='Approved'
+ORDER BY b.Date DESC
+";
+
+$result = $conn->query($sql);
+$sn = 1;
+
+?>
 <html>
 <head>
     <title>View own appointment</title>
@@ -122,11 +148,7 @@
 <div id="top">
     <div id="topic">
         <h3 style="color:2D2D2D ">Appointments</h3>
-                <div class="toggle-container">
-                    <button class="toggle-option active" onclick="setActive(this)" style="font-size:.7rem">All</button>
-                    <button class="toggle-option" onclick="setActive(this)"style="font-size:.7rem">Approved</button>
-                    <button class="toggle-option" onclick="setActive(this)"style="font-size:.7rem">Requests</button>
-                </div>
+                
 
                 <script>
                     function setActive(element) {
@@ -155,16 +177,26 @@
             <th>Status</th>
             <th></th>
         </thead>
+        <?php if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        ?>
         <tr>
-
-            <td>1</td>
-            <td>client name</td>
-            <td>aug 12</td>
-            <td>9;00</td>
-            <td>confrimed</td>
-            <td><a href="#">View Details</a></td>
-            
+            <td><?php echo $sn++; ?></td>
+            <td><?php echo $row['client']; ?></td>
+            <td><?php echo $row['Date']; ?></td>
+            <td><?php echo $row['Time']; ?></td>
+            <td><?php echo $row['Status']; ?></td>
+            <td>
+                <a href="ViewAppointment.php?id=<?php echo $row['Appt_ID']; ?>">
+                    View Details
+                </a>
+            </td>
         </tr>
+        <?php
+    }
+} else {
+    echo "<tr><td colspan='6'>No appointments found</td></tr>";
+}?>
     </table>
 
 </div>

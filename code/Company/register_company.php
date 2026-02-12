@@ -26,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         
 
-        $sql2 = "INSERT INTO employee (name, password, email, phone, role,Company_ID) 
-                 VALUES ('$emp_name', '$emp_pass', '$emp_email', '$emp_phone', 1, $org_id)";
+        $sql2 = "INSERT INTO employee (name, password, email, phone, role,Company_ID, Isadmin) 
+                 VALUES ('$emp_name', '$emp_pass', '$emp_email', '$emp_phone', 'Admin', $org_id, 1)";
         
         if ($conn->query($sql2) === TRUE) {
             // Clear session after registration
@@ -45,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,66 +53,72 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="../style/button.css">
     <title>Register Company</title>
     <style>
-        #second{
-    display:none;
-}
+
+        form {
+            background-color: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #container {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            gap: 5%;
+            box-sizing: border-box;
+        }
+
+        #first, #second {
+            width:48%;
+        }
+        h2 {
+            text-align: center;
+        }
+
+        p {
+            text-align: center;
+        }
     </style>
 </head>
+
 <body>
-    <form align="center" style="width: 70%; margin-left: 10%; margin-right: 10%;" method="post">
-        <h2>SIGN UP</h3>
-
-            <div style="border: 1 rgb(14, 62, 217) solid; border-radius: 100%; background-color: rgb(14, 62, 217); width: 3.2rem; color: white;">1</div>
+    <form method="post">
+        <h2>SIGN UP</h2>
+        <div id="container">
             <div id="first">
-                <h3 align="left"> COMPANY DETAILS:</h3>
-        <div style="display: flex; width: 100%; gap: 10%;">
-        <div align="left" style="width: 45%;">
-            
-        <label>Name</label><br>
-        <input type="text" placeholder="Enter your Name" name="name" id="name"><br>
-        <label>Contact No.</label><br>
-        <input type="tel" placeholder="Enter your Contact no." name="contact" id="contact"><br>
-        </div>
+                <h3>COMPANY DETAILS:</h3>
+                <label>Name</label><br>
+                <input type="text" placeholder="Enter your Name" name="name" id="name" required><br>
 
-        <div align="left" style="width: 45%;">
-        <label>Email</label><br>
-        <input type="email" placeholder="Enter your Email" name="email" id="email"><br>
-        <label>type</label><br>
-        <input type="text" placeholder="Enter your organizaiton type" name="type" id="type"><br>
-        </div>
-        </div>
-        <button type="button" onclick="change()">Next</button>
-        <p>Already have an account?<a href="log in.html">Log In</a></p>
-        </div>
+                <label>Email</label><br>
+                <input type="email" placeholder="Enter your Email" name="email" id="email" required><br>
 
+                <label>Contact No.</label><br>
+                <input type="tel" placeholder="Enter your Contact no." name="contact" id="contact" required><br>
 
-        <div id="second">
-                    <h3 align="left"> COMPANY LOCATION:</h3>
+                <label>Type</label><br>
+                <input type="text" placeholder="Enter your organization type" name="type" id="type" required><br>
+            </div>
 
-        <div style=" width: 100%; gap: 2.4rem;">
-        <div align="left" style="width: 45%;">
-        <label>Address</label><br>
-        <input type="text" placeholder="Enter your Address" name="address" ><br>
-        <label>City</label><br>
-        <input type="text" placeholder="Enter your city" name="city"><br>
-        </div>
+            <div id="second">
+                <h3>COMPANY LOCATION:</h3>
+                <label>Address</label><br>
+                <input type="text" placeholder="Enter your Address" name="address" required><br>
 
-        <div align="left" style="width: 45%;">
-        <label>State</label><br>
-        <input type="text" placeholder="Enter your State" name="state"><br>
-        <label>zip code</label><br>
-        <input type="text" placeholder="Enter your zip code" name="zip_code"><br>
-        <button type="submit"> register</button>
-        </div>
-        </div>
-        </div>
+                <label>City</label><br>
+                <input type="text" placeholder="Enter your city" name="city"><br>
 
-        <script>
-            function change(){
-                document.getElementById("first").style.display="none";
-                document.getElementById("second").style.display="inline";
-            }
-        </script>
+                <label>State</label><br>
+                <input type="text" placeholder="Enter your State" name="state"><br>
+
+                <label>Zip code</label><br>
+                <input type="text" placeholder="Enter your zip code" name="zip_code"><br>
+            </div>
+        </div>
+        <button type="submit">Register</button>
+        <p>Already have an account? <a href="../login/log in.php">Log In</a></p>
+        <div >
+        </div>
     </form>
 </body>
 </html>

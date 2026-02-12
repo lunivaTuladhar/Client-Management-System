@@ -2,6 +2,7 @@
 include("../db.php"); // your existing database connection
 session_start();
 $company_id = $_SESSION['company_id'];
+$employee_id =$_SESSION['user_id']
 ?>
 
 <html>
@@ -121,8 +122,7 @@ $company_id = $_SESSION['company_id'];
                             <select id="role_select" name="role" onchange="this.form.submit()">
                                 <option value="all" <?php if ($role == 'all') echo 'selected'; ?>>All</option>
                                 <option value="admin" <?php if ($role == 'admin') echo 'selected'; ?>>Admin</option>
-                                <option value="staff" <?php if ($role == 'staff') echo 'selected'; ?>>Staff</option>
-                                <option value="doctor" <?php if ($role == 'doctor') echo 'selected'; ?>>Doctor</option>
+                                <option value="employee" <?php if ($role == 'employee') echo 'selected'; ?>>Employee</option>
                             </select>
                         </div>
                     </form>
@@ -133,7 +133,8 @@ $company_id = $_SESSION['company_id'];
                 <table width:100%>
                     <thead>
                         <tr>
-                            <th>Id</th>
+                            <th>Sn</th>
+                            <th>Employee Id</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
@@ -144,7 +145,7 @@ $company_id = $_SESSION['company_id'];
                     <tbody>
                         <?php
                         // --- Search & Filter Logic ---
-                        $query = "SELECT * FROM employee WHERE Company_ID = '$company_id'";
+                        $query = "SELECT * FROM employee WHERE Company_ID = '$company_id' AND Emp_ID != $employee_id";
 
                         if ($role !== 'all') {
                             $query .= " AND Role = '$role'";
@@ -158,8 +159,11 @@ $company_id = $_SESSION['company_id'];
                         $result = mysqli_query($conn, $query);
 
                         if (mysqli_num_rows($result) > 0) {
+                            $sn=1;
+
                             while ($row = mysqli_fetch_assoc($result)) {
                                 echo "<tr>
+                                    <td>$sn</td>
                                     <td>{$row['Emp_ID']}</td>
                                     <td>{$row['Name']}</td>
                                     <td>{$row['Email']}</td>
@@ -167,6 +171,7 @@ $company_id = $_SESSION['company_id'];
                                     <td>{$row['Role']}</td>
                                     <td><a href='EmployeeDetails.php?id={$row['Emp_ID']}'>View</a></td>
                                 </tr>";
+                                $sn++;
                             }
                         } else {
                             echo "<tr><td colspan='7' style='text-align:center;'>No employees found</td></tr>";

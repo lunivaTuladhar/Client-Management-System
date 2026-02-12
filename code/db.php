@@ -1,5 +1,5 @@
 <?Php
-$servername = "localhost";
+$servername = "localhost:3306";
 $username = "root";   // change if needed
 $password = "";       // change if needed
 $dbname = "CMS";

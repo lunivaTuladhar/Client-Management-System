@@ -79,7 +79,10 @@ if($result->num_rows > 0){
     </style>
 </head>
 <body>
-    <h2 style="text-align:center;">Timetable for Employee ID: <?php echo $emp_id; ?></h2>
+    <div>
+        <a href="Timetable.php"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="24" viewBox="0 0 12 24"><path fill="currentColor" fill-rule="evenodd" d="M10 19.438L8.955 20.5l-7.666-7.79a1.02 1.02 0 0 1 0-1.42L8.955 3.5L10 4.563L2.682 12z"/></svg></a>
+        <h2 style="text-align:center;">Timetable for Employee ID: <?php echo $emp_id; ?></h2>
+    </div>
     <table>
         <thead>
             <tr>
