@@ -18,7 +18,7 @@ $sql = $conn->prepare("
     FROM book_appt b
     INNER JOIN company c ON b.Company_ID = c.Company_ID
     INNER JOIN employee e ON b.Emp_ID = e.Emp_ID
-    WHERE b.Client_ID = ? and b.status !='Cancelled'
+    WHERE b.Client_ID = ? and b.status in ('Approved','Pending')
     ORDER BY b.Date DESC, b.Time DESC
 ");
 $sql->bind_param("i", $clientId);
@@ -60,23 +60,32 @@ h3{
     padding: 74 0 0 0;
 }
 table{
-    background-color:#F5F3F3;
     padding:10px;
-    border-radius: 12px;
+    border-radius:12px;
     width:100%;
+    border-collapse:collapse;
 }
-td{
-    padding:12px;
-    background-color:#F5F3F3;
-}
-th{
-    background-color: rgb(14,62,217,0.2);
+th, td{
     padding:12px;
     text-align:left;
-    color: rgb(14,62,217,0.9);
 }
-tr{
-    height:32px;
+th{
+    background-color: rgba(14,62,217,0.2); 
+    color: rgba(14,62,217,0.9);
+    
+}
+th:last-child{
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+th:first-child{
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+#table{
+    padding:12px;
+    background-color:#F5F3F3;
+    border-radius:12px;
 }
 .pending { color: #ffc107; }
         .approved { color: #28a745; }
@@ -94,7 +103,7 @@ tr{
         <h3>My Appointments</h3>
     </div>    
 </div>
-
+<div id="table">
 <table>
     <thead>
         <th>SN</th>
@@ -135,7 +144,7 @@ tr{
         </tr>
     <?php } ?>
 </table>
-
+</div>
 </div>
 </div>
 

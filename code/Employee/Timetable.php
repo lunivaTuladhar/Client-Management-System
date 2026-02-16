@@ -52,36 +52,35 @@ session_start();
         
         
     }
-    table{
-        background-color:#F5F3F3;
-        padding:10px;
-        border-radius: 12px;
-    }
-    th td{
-        border:1px solid blue;
-    }
-    td{
-        padding:12px;
-        background-color:#F5F3F3;
-    }
-    th{
-        background-color: rgb(14,62,217,0.2);
-        padding:12px;
-        text-align:left;
-        color: rgb(14,62,217,0.9);
-    }
-    tr{
-        height:32px;
-    }
-    thead th:first-child{
-        border-top-left-radius: 12px;
-        border-bottom-left-radius: 12px;
-        width:350px;
-    }
-    thead th:last-child{
-        border-top-right-radius: 12px;
-        border-bottom-right-radius: 12px;
-    }
+    table{ 
+          background-color:#F5F3F3; 
+          padding:10px; 
+          border-radius:12px; 
+          width:100%; 
+          border-collapse:collapse; 
+        }
+        th, td{ 
+          padding:12px; 
+        }
+        th{ 
+          background-color: rgba(14,62,217,0.2); 
+          text-align:left; 
+          color: rgba(14,62,217,0.9);
+        }
+        
+        thead th:first-child{ 
+          border-top-left-radius:12px; 
+          border-bottom-left-radius:12px; 
+        }
+        thead th:last-child{ 
+          border-top-right-radius:12px; 
+          border-bottom-right-radius:12px;
+        }
+        #table{
+            padding:12px;
+            background-color:#F5F3F3;
+            border-radius:12px;
+        }
     #role_select{
         background-color:#ffffff;
         border: 1px solid rgba(45,45,45,0.2);
@@ -106,7 +105,7 @@ session_start();
                 <h3 style="color:2D2D2D ">Timetable</h3>
                
             </div>
-
+            <div id="table">
            <table width="100%">
     <thead>
         <tr>
@@ -176,6 +175,7 @@ foreach ($days as $day => $times) {
 </tbody>
 
 </table>
+</div>
 
         </div>
     </div>

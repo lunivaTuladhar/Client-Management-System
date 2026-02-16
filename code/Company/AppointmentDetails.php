@@ -91,7 +91,7 @@ $time_result = $conn->query("SELECT Time_ID, Start_Time, End_Time FROM time_stam
 <div id="container">
     <div id="whole">
         <div id="top">
-            <a href="Appointment.php">
+            <a href="history.php">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="24" viewBox="0 0 12 24">
                     <path fill="currentColor" fill-rule="evenodd" d="M10 19.438L8.955 20.5l-7.666-7.79a1.02 1.02 0 0 1 0-1.42L8.955 3.5L10 4.563L2.682 12z"/>
                 </svg>

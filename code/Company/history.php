@@ -45,37 +45,22 @@ $company_id = $_SESSION['company_id'];
             height: 86vh;
             padding: 74px 0 0 0;
         }
-        table{
-            background-color:#F5F3F3;
-            padding:10px;
-            border-radius: 12px;
-            width:100%;
-        }
-        th td{
-            border:1px solid blue;
-        }
-        td{
-            padding:12px;
-            background-color:#F5F3F3;
-        }
-        th{
-            background-color: rgb(14,62,217,0.2);
-            padding:12px;
-            text-align:left;
-            color: rgb(14,62,217,0.9);
-            width:100px;
-        }
-        tr{
-            height:32px;
-        }
-        thead th:first-child{
-            border-top-left-radius: 12px;
-            border-bottom-left-radius: 12px;
-            width: 12px;
-        }
-        thead th:last-child{
+        table{background:#F5F3F3;padding:10px;border-radius:12px;width:100%;border-collapse:collapse;text-align:left;}
+        th,td{padding:12px;}
+        th{background:rgba(14,62,217,.2);color:rgba(14,62,217,.9);}
+        
+        th:last-child{
             border-top-right-radius: 12px;
             border-bottom-right-radius: 12px;
+        }
+        th:first-child{
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+        #table{
+            padding:12px;
+            background-color:#F5F3F3;
+            border-radius:12px;
         }
         #role_select {
             background-color: #ffffff;
@@ -127,6 +112,7 @@ $company_id = $_SESSION['company_id'];
                 </form>
             </div>
         </div>
+        <div id="table">
             <table>
                 <thead>
                     <tr>
@@ -186,6 +172,7 @@ $company_id = $_SESSION['company_id'];
                     ?>
                 </tbody>
             </table>
+            </div>
     </div>
 </div>
 </body>

@@ -1,6 +1,31 @@
 <?php
 session_start();
-include('../db.php'); // your database connection
+include('../db.php'); 
+
+if(isset($_GET['delete'])){
+
+    $time_id = intval($_GET['delete']);
+
+     $stmt = $conn->prepare("DELETE FROM time_stamp WHERE Time_ID = ? ");
+    $stmt->bind_param("i", $time_id);
+    $stmt->execute();
+
+    $stmt = $conn->prepare("DELETE FROM timetable WHERE Time_ID = ? AND Company_ID = ?");
+    $stmt->bind_param("ii", $time_id, $company_id);
+    $stmt->execute();
+
+    if($stmt){
+
+        echo "<script>alert('Timetable deleted successfully'); window.location='Timetable.php';</script>";
+        exit;
+
+    } else {
+        echo "<script>alert('Delete failed or not authorized'); window.location='Timetable.php';</script>";
+        exit;
+    }
+}
+
+
 ?>
 
 <html>
@@ -9,8 +34,10 @@ include('../db.php'); // your database connection
     <link rel="stylesheet" href="../style/button.css">
     <link rel="stylesheet" href="../style/form.css">
     <link rel="stylesheet" href="../style/Heading.css">
+
     <style>
-                input{height:32px;width:300px;margin:0;}
+
+        input{height:32px;width:300px;margin:0;}
 
         #content{
             padding: 12px;
@@ -34,37 +61,22 @@ include('../db.php'); // your database connection
             display:flex; 
             gap:12px; 
         }
-        table{
-            background-color:#F5F3F3;
-            padding:10px;
-            border-radius: 12px;
-            width:100%;
-        }
-        th td{
-            border:1px solid blue;
-        }
-        td{
-            padding:12px;
-            background-color:#F5F3F3;
-        }
-        th{
-            background-color: rgb(14,62,217,0.2);
-            padding:12px;
-            text-align:left;
-            color: rgb(14,62,217,0.9);
-            width:100px;
-        }
-        tr{
-            height:32px;
-        }
-        thead th:first-child{
-            border-top-left-radius: 12px;
-            border-bottom-left-radius: 12px;
-            width: 12px;
-        }
-        thead th:last-child{
+        table{background:#F5F3F3;padding:10px;border-radius:12px;width:100%;border-collapse:collapse;text-align:left;}
+        th,td{padding:12px;}
+        th{background:rgba(14,62,217,.2);color:rgba(14,62,217,.9);}
+        
+        th:last-child{
             border-top-right-radius: 12px;
             border-bottom-right-radius: 12px;
+        }
+        th:first-child{
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+        #table{
+            padding:12px;
+            background-color:#F5F3F3;
+            border-radius:12px;
         }
         h3{
             margin:0px;
@@ -82,7 +94,7 @@ include('../db.php'); // your database connection
                 <button onclick="window.location='AddTimetable.php'">Add Timetable</button>
             </div>
         </div>
-
+        <div id="table">
         <table>
             <thead>
                 <tr>
@@ -91,7 +103,7 @@ include('../db.php'); // your database connection
                     <th>Start Time</th>
                     <th>End Time</th>
                     <th>Days</th>
-                    <th></th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -99,7 +111,8 @@ include('../db.php'); // your database connection
 $company_id = $_SESSION['company_id'];
 
 // Fetch timetable details including days
-$sql = "SELECT e.Emp_ID, e.Name AS EmpName, e.Email,
+$sql = "SELECT t.Time_ID,
+               e.Emp_ID, e.Name AS EmpName, e.Email,
                ts.Start_Time, ts.End_Time,
                t.Sun, t.Mon, t.Tue, t.Wed, t.Thu, t.Fri, t.Sat
         FROM timetable t
@@ -108,6 +121,7 @@ $sql = "SELECT e.Emp_ID, e.Name AS EmpName, e.Email,
             AND c.Company_ID = $company_id
         INNER JOIN time_stamp ts ON t.Time_ID = ts.Time_ID
         ORDER BY e.Name ASC, ts.Start_Time ASC";
+
 
 $result = $conn->query($sql);
 
@@ -130,6 +144,24 @@ if($result && $result->num_rows > 0){
         echo "<td>".htmlspecialchars($row['Start_Time'])."</td>";
         echo "<td>".htmlspecialchars($row['End_Time'])."</td>";
         echo "<td>".(!empty($days) ? implode(", ", $days) : "No Days Selected")."</td>";
+      echo "<td>
+      <div style='display:flex; gap:12px;'>
+      
+      <a href='edit_timetable.php?id=".$row['Time_ID']."'
+           style='color:#007bff; text-decoration:none;'>
+           <p>Edit</p>
+        </a>
+
+        <a href='?delete=".$row['Time_ID']."'
+           onclick=\"return confirm('Are you sure you want to delete this timetable?');\"
+           style='color:rgba(239,24,24,0.9); ;text-decoration:none;'>
+           <p>Delete</p>
+        </a>
+
+        </div>
+      </td>";
+
+
         echo "</tr>";
     }
 } else {
@@ -140,6 +172,7 @@ if($result && $result->num_rows > 0){
 
             </tbody>
         </table>
+</div>
     </div>
 </div>
 </body>

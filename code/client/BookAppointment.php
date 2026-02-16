@@ -237,8 +237,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <option value="">Select time</option>
     </select>
 
-    <label>Reason</label>
-    <textarea name="reason" placeholder="Enter reason..." required></textarea>
+    <label>Reason (optional)</label>
+    <textarea name="reason" placeholder="Enter reason..."></textarea>
 </div>
 </div>
 <div class="btn-container">

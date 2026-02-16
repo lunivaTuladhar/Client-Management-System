@@ -9,6 +9,7 @@ c.Name as client,
     b.Appt_ID,
     b.Date,
     b.Time,
+    b.Reason,
     b.Status,
     e.Name AS EmpName
 FROM book_appt b
@@ -64,37 +65,36 @@ $sn = 1;
     #topic{
         margin-top:2px;
     } 
-    table{
-        background-color:#F5F3F3;
-        padding:10px;
-        border-radius: 12px;
-    }
-     th td{
-        border:1px solid blue;
-    }
-     td{
-        padding:12px;
-        background-color:#F5F3F3;
-    }
-     th{
-        background-color: rgb(14,62,217,0.2);
-        padding:12px;
-        text-align:left;
-        color: rgb(14,62,217,0.9);
-        width:100px;
-    }
-    tr{
-        height:32px;
-    }
-    thead th:first-child{
-        border-top-left-radius: 12px;
-        border-bottom-left-radius: 12px;
-        width: 12px;
-    }
-    thead th:last-child{
-        border-top-right-radius: 12px;
-        border-bottom-right-radius: 12px;
-    }
+    table{ 
+          background-color:#F5F3F3; 
+          padding:10px; 
+          border-radius:12px; 
+          width:100%; 
+          border-collapse:collapse; 
+        }
+        th, td{ 
+          padding:12px; 
+        }
+        th{ 
+          background-color: rgba(14,62,217,0.2); 
+          text-align:left; 
+          color: rgba(14,62,217,0.9);
+        }
+        
+        thead th:first-child{ 
+          border-top-left-radius:12px; 
+          border-bottom-left-radius:12px; 
+        }
+        thead th:last-child{ 
+          border-top-right-radius:12px; 
+          border-bottom-right-radius:12px;
+        }
+        #table{
+            padding:12px;
+            background-color:#F5F3F3;
+            border-radius:12px;
+        }
+
     #topic{
         display:flex;
         width: 100%;
@@ -167,17 +167,17 @@ $sn = 1;
     element.classList.add('active');
   }
 </script>
-
+<div id="table">
     <table width="100%">
         <thead >
             <th>SN</th>
             <th>Name</th>
             <th>Date</th>
             <th>Time</th>
+            <th>Reason</th>
             <th>Status</th>
-            <th></th>
         </thead>
-        <?php if ($result->num_rows > 0) {
+        <?php if ($result->num_rows > 0) :
     while ($row = $result->fetch_assoc()) {
         ?>
         <tr>
@@ -185,20 +185,18 @@ $sn = 1;
             <td><?php echo $row['client']; ?></td>
             <td><?php echo $row['Date']; ?></td>
             <td><?php echo $row['Time']; ?></td>
+            <td><?php echo $row['Reason']; ?></td>
             <td><?php echo $row['Status']; ?></td>
-            <td>
-                <a href="ViewAppointment.php?id=<?php echo $row['Appt_ID']; ?>">
-                    View Details
-                </a>
-            </td>
+            
         </tr>
         <?php
     }
-} else {
-    echo "<tr><td colspan='6'>No appointments found</td></tr>";
-}?>
-    </table>
 
+else :?>
+    <tr><td colspan='6' style="text-align:center;">No appointments found</td></tr>
+<?php endif;?>
+    </table>
+</div>
 </div>
 </div>
 </body>

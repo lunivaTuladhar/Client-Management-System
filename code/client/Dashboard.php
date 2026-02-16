@@ -18,10 +18,10 @@ $user_result = $user_query->get_result();
 if($user_result->num_rows>0){
     $user = $user_result->fetch_assoc();
     $emp_name = ucfirst($user['Name']);
-    $profile_pic = $user['Profile'] ? $user['Profile'] : "../images/default_profile.png";
+    $profile_pic = $user['Profile'] ? $user['Profile'] : "../images/default_company.png";
 }else{
     $emp_name = "User";
-    $profile_pic = "../images/default_profile.png";
+    $profile_pic = "../images/default_company.png";
 }
 
 // Fetch 6 recommended companies
@@ -58,7 +58,7 @@ $appt_result = $appt_query->get_result();
           gap:12px; 
           background-color:#F5F3F3; 
           margin-top:12px; 
-          height:550px;
+          height:100%;
         }
         .company-card-link {
             text-decoration: none;
@@ -113,15 +113,16 @@ $appt_result = $appt_query->get_result();
         #right_container{ 
           background-color:#F5F3F3; 
           width:500px; 
-          margin-right:12px; 
+          margin-right:8px; 
+          margin-bottom:8px; 
           margin-top:38px;
         }
         #left_container{ 
           height:90vh; 
-          padding:24px 0 0 0; 
+          padding:26px 0 0 0; 
           background-color:#F5F3F3; 
         }
-        .profile{ 
+        .profile-pic{ 
           border-radius:50%; 
           margin-top:1%; 
           background-size: cover; 
@@ -203,6 +204,10 @@ $appt_result = $appt_query->get_result();
         .pending { color: #ffc107; }
         .approved { color: #28a745; }
         .rejected { color: #dc3545; }
+        img{
+          width:40px;
+          height: 40px;
+        }
     </style>
 </head>
 
@@ -210,48 +215,46 @@ $appt_result = $appt_query->get_result();
 
 <?php include ("../fixed/sidebar.php"); ?>
 
-<div id="whole_container">
+<div id="whole_container" style="height:100%;">
 
 <div id="left_container">
     <div id="welcome">
         <h2>WELCOME, <?php echo strtoupper($emp_name); ?></h2>
-        <img src="<?php echo $profile_pic; ?>" alt="Pic" height="40px" width="40px" class="profile">
+        <img src="<?php echo $profile_pic; ?>" class="profile-pic">
     </div>
 
     <div id="recommend">
       <div style="display:flex;justify-content:space-between; ">
 
         <h2>Recommended Organizations</h2>
-       <a href="list_company.php"> <p> veiw more</p></a>
+        <a href="list_company.php"> <p> veiw more</p></a>
       </div>
       <div id="recomended-content" >
-       <?php
-if($company_result && $company_result->num_rows > 0){
-    while($comp = $company_result->fetch_assoc()){
-        $logo = $comp['Logo'] ? $comp['Logo'] : "../images/default_company.png";
-        $desc = !empty($comp['Description']) ? substr($comp['Description'], 0, 80) . '...' : 'No description available.';
-        $company_id = $comp['Company_ID'];
-        echo "
-        <a href='ViewCompanyDetails.php?id={$company_id}' class='company-card-link'>
-           <div id='fullcard'> <div class='company-card'>
+        <?php
+          if($company_result && $company_result->num_rows > 0){
+          while($comp = $company_result->fetch_assoc()){
+          $logo = $comp['Logo'] ? $comp['Logo'] : "../images/default_company.png";
+          $company_id = $comp['Company_ID'];
+          echo "
+          <a href='ViewCompanyDetails.php?id={$company_id}' class='company-card-link'>
+          <div id='fullcard'> <div class='company-card'>
             
-                <img src='{$logo}' alt='Company Logo' class='company-logo'/>
-                <div class='company-info'>
-                    <p class='company-name'>{$comp['Name']}</p>
-                    <p class='company-address'>{$comp['Address']}</p>
-                   
-                </div>
-            </div> <p class='company-desc'>{$desc}</p>
-            </div>
-        </a>";
-    }
-} else {
-    echo "<p>No companies found</p>";
-}
-?>
-      </div>
+            <img src='{$logo}' alt='Company Logo' class='company-logo'/>
+            <div class='company-info'>
+                <p class='company-name'>{$comp['Name']}</p>
+                <p class='company-address'>{$comp['Address']}</p>
+               
+          </div>
+          </div> 
+          </div>
+          </a>";
+          }
+          } else {
+              echo "<p>No companies found</p>";
+          }
+        ?>
     </div>
-
+  </div>
 </div>
 
 <div id="right_container">
@@ -266,7 +269,6 @@ if($company_result && $company_result->num_rows > 0){
             <th>Date</th>
             <th>Time</th>
             <th>Status</th>
-            <th>Details</th>
         </tr>
     </thead>
     <tbody>
@@ -293,9 +295,7 @@ if ($appt_result && $appt_result->num_rows > 0) {
                         {$appt['Status']}
                     </span>
                 </td>
-                <td>
-                    <a href='AppointmentDetails.php?Appt_ID={$appt['Appt_ID']}'>View</a>
-                </td>
+                
               </tr>";
     }
 } else {

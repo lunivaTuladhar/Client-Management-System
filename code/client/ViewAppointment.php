@@ -20,9 +20,11 @@ $appointmentId = intval($_GET['id']);
 // Fetch appointment details
 $sql = $conn->prepare("
     SELECT b.Appt_ID, b.Date, b.Time, b.Reason, b.Status, 
-           e.Name AS Emp_Name, e.Phone AS Emp_Phone
+           e.Name AS Emp_Name, e.Phone AS Emp_Phone, 
+           c.name as Company_name
     FROM book_appt b
     INNER JOIN employee e ON b.Emp_ID = e.Emp_ID
+    join company c on e.Company_ID =c.Company_ID
     WHERE b.Appt_ID = ? AND b.Client_ID = ?
     LIMIT 1
 ");
@@ -104,6 +106,13 @@ button{
 .cancel-btn{
     background:#d11a2a;
 }
+#top{
+    display:flex;
+    margin-bottom:12px;
+}
+#top h3{
+    margin:0;
+}
 </style>
 
 <body>
@@ -113,10 +122,17 @@ button{
 <div id="content">
 
 <div class="details-box">
+    <div id="top">
+    <a href="MyAppointment.php"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="24" viewBox="0 0 12 24"><path fill="currentColor" fill-rule="evenodd" d="M10 19.438L8.955 20.5l-7.666-7.79a1.02 1.02 0 0 1 0-1.42L8.955 3.5L10 4.563L2.682 12z"/></svg></a>
     <h3>Appointment Details</h3>
+    </div>
 
     <div class="row">
-        <span class="label">Name (Employee):</span>
+        <span class="label">Company Name:</span>
+        <span class="value"><?php echo htmlspecialchars($data['Company_name']); ?></span>
+    </div>
+    <div class="row">
+        <span class="label">Employee Name:</span>
         <span class="value"><?php echo htmlspecialchars($data['Emp_Name']); ?></span>
     </div>
 
@@ -140,8 +156,7 @@ button{
         <span class="value"><?php echo htmlspecialchars($data['Reason']); ?></span>
     </div>
 
-    <form method="POST">
-        <button type="button" class="back-btn" onclick="window.history.back()">Back</button>
+    <form method="POST" onsubmit="return canceling()">
 
         <?php if (strtolower($data['Status']) !== 'cancelled') { ?>
             <button type="submit" name="cancel" class="cancel-btn">Cancel Appointment</button>
@@ -154,6 +169,10 @@ button{
 
 </div>
 </div>
-
+<script>
+    function canceling(){
+        return confirm("Are you sure you want to cancel?");
+    }
+</script>
 </body>
 </html>

@@ -2,7 +2,6 @@
 session_start();
 include("../db.php");
 
-// Make sure user is logged in
 if(!isset($_SESSION['user_id'])){
     header("location:../login/log in.php");
     exit();
@@ -10,7 +9,6 @@ if(!isset($_SESSION['user_id'])){
 
 $emp_id = $_SESSION['user_id'];
 
-// Get the company ID of logged-in employee
 $company_query = $conn->prepare("SELECT Company_ID FROM employee WHERE Emp_ID=?");
 $company_query->bind_param("i", $emp_id);
 $company_query->execute();
@@ -21,10 +19,8 @@ if($company_result->num_rows==0){
 $company_row = $company_result->fetch_assoc();
 $company_id = $company_row['Company_ID'];
 
-// Determine status filter from GET (toggle)
 $status_filter = $_GET['status'] ?? 'All';
 
-// Build SQL query
 $sql = "SELECT ba.Appt_ID, ba.Date, ba.Time, ba.Status,
                c.Name AS Client_Name, e.Name AS Employee_Name, ba.Emp_ID
         FROM book_appt ba
@@ -47,7 +43,6 @@ if($status_filter == "Approved"){
 
 $sql .= " AND ba.Status !='Completed' ORDER BY ba.Date ASC, ba.Time ASC";
 
-// Prepare and execute
 $stmt = $conn->prepare($sql);
 $stmt->bind_param($types, ...$params);
 $stmt->execute();
@@ -61,7 +56,6 @@ $result = $stmt->get_result();
     <link rel="stylesheet" href="../style/Heading.css">
 </head>
 <style>
-/* Keep your original styling */
 button{
     width: 164px;
 }
@@ -148,6 +142,10 @@ th:first-child{
     background-color:#F5F3F3;
     border-radius:12px;
 }
+.pending { color: #ffc107; }
+        .approved { color: #28a745; }
+        .completed { color: #28a745; }
+        .rejected { color: #dc3545; }
 </style>
 <body>
 <?php include ("../fixed/sidebar.php") ?>
@@ -179,14 +177,18 @@ th:first-child{
         if($result->num_rows > 0){
             $sn = 1;
             while($row = $result->fetch_assoc()){
+                $status_color= strtolower($row['Status']) == 'pending' ? 'pending' : 
+                             (strtolower($row['Status']) == 'approved' ? 'approved' : 'rejected');
                 echo "<tr>";
                 echo "<td>{$sn}</td>";
                 echo "<td>{$row['Client_Name']}</td>";
                 echo "<td>{$row['Date']}</td>";
                 echo "<td>{$row['Time']}</td>";
                 echo "<td>{$row['Employee_Name']}</td>";
-                echo "<td>{$row['Status']}</td>";
-                echo "<td><a href='AppointmentDetails.php?Appt_ID={$row['Appt_ID']}'>View Details</a></td>";
+                echo "<td><span class='$status_color'>
+                        {$row['Status']}
+                        </span></td>";
+                echo "<td><a href='AppointmentDetails.php?Appt_ID={$row['Appt_ID']}'>View</a></td>";
                 echo "</tr>";
                 $sn++;
             }

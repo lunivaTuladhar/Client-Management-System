@@ -10,10 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $city     = $_POST['city'] ?? '';
     $state    = $_POST['state'] ?? '';
     $zip_code = $_POST['zip_code'] ?? '';
-
+    $full_address = $address . ', ' . $city . ', ' . $state;
     // Insert into organization
     $sql = "INSERT INTO company (name, address, phone, email, type, zip_code) 
-            VALUES ('$org_name', '$address, $city, $state', '$contact', '$email', '$type', '$zip_code')";
+            VALUES ('$org_name', '$full_address', '$contact', '$email', '$type', '$zip_code')";
     
     if ($conn->query($sql) === TRUE) {
         $org_id = $conn->insert_id; // get ID of just inserted organization
@@ -26,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         
 
-        $sql2 = "INSERT INTO employee (name, password, email, phone, role,Company_ID, Isadmin) 
-                 VALUES ('$emp_name', '$emp_pass', '$emp_email', '$emp_phone', 'Admin', $org_id, 1)";
+        $sql2 = "INSERT INTO employee (name, password, email, phone, role,address,Company_ID, Isadmin) 
+                 VALUES ('$emp_name', '$emp_pass', '$emp_email', '$emp_phone', 'Admin','$full_address', $org_id, 1)";
         
         if ($conn->query($sql2) === TRUE) {
             // Clear session after registration

@@ -69,20 +69,12 @@ if (!empty($search)) {
            
 
         }
-        #search input{
-        }
         #search form{
             width:30%;
             margin-left: 0%; 
             margin-right: 0%;
-            margin-top: 12px;
-            margin-bottom: 12px;
             padding:0;
             
-        }
-        #search h3{
-           
-
         }
         #recomended-content{
           background-color: #F5F3F3; 
@@ -161,7 +153,7 @@ if (!empty($search)) {
 <body style="background-color:#F3F3F3;">
   <div id="container">
     <div id="search">
-      Browse
+      <h3>Browse</h3>
 <form method="post">
     <input type="text" name="search" placeholder="search your company"
            value="<?= isset($_POST['search']) ? htmlspecialchars($_POST['search']) : '' ?>">
@@ -174,7 +166,6 @@ if (!empty($search)) {
 if($company_result && $company_result->num_rows > 0){
     while($comp = $company_result->fetch_assoc()){
         $logo = $comp['Logo'] ? $comp['Logo'] : "../images/default_company.png";
-        $desc = !empty($comp['Description']) ? substr($comp['Description'], 0, 80) . '...' : 'No description available.';
         $company_id = $comp['Company_ID'];
         echo "
         <a href='ViewCompanyDetails.php?id={$company_id}' class='company-card-link'>
@@ -186,7 +177,7 @@ if($company_result && $company_result->num_rows > 0){
                     <p class='company-address'>{$comp['Address']}</p>
                    
                 </div>
-            </div> <p class='company-desc'>{$desc}</p>
+            </div> 
             </div>
         </a>";
     }

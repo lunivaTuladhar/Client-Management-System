@@ -6,7 +6,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $contact  = $_POST['contact'] ;
     $email    = $_POST['email'] ;
     $password = $_POST['password'] ;
-    $address = $_POST['address'] ;
     $hasOrg   = isset($_POST['checkbox']) ? 1 : 0;
     if ($hasOrg) {
         // Save data into SESSION instead of DB
@@ -14,15 +13,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['contact'] =  $contact;
         $_SESSION['email'] =  $email;
         $_SESSION['password'] =  $password;
-        $_SESSION['address'] = $address;
         
         // Redirect to company registration page
         header("Location: ../Company/register_company.php");
         exit();
     } else {
         // Insert into client table directly
-        $sql = "INSERT INTO client (name, password, email, phone, address) 
-                VALUES ('$name', '$password', '$email', '$contact', '$address')";
+        $sql = "INSERT INTO client (name, password, email, phone) 
+                VALUES ('$name', '$password', '$email', '$contact')";
         if ($conn->query($sql) === TRUE) {
             header("Location: log in.php");
             exit();
@@ -49,6 +47,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         width: 100%; 
         gap: 10%;
     }
+    
 </style>
 
 <!DOCTYPE html>
@@ -66,16 +65,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div align="left" style="width: 45%;">
             
                 <label>Name</label><br>
-                <input type="text" placeholder="Enter your Name" name="name" id="name"><br>
+                <input type="text" style="padding:4 8 4 8;" placeholder="Enter your Name" name="name" id="name"><br>
                 <label>Contact No.</label><br>
-                <input type="tel" placeholder="Enter your Contact no."name="contact" id="contact"><br>
+                <input type="tel" style="padding:4 8 4 8;" placeholder="Enter your Contact no."name="contact" id="contact"><br>
             </div>
 
             <div align="left" style="width: 45%;">
                 <label>Email</label><br>
-                <input type="email" placeholder="Enter your Email"name="email" id="email"><br>
+                <input type="email" style="padding:4 8 4 8;" placeholder="Enter your Email"name="email" id="email"><br>
                 <label>Password</label><br>
-                <input type="password" placeholder="Enter your Password" name="password" id="password"><br>
+                <input type="password" style="padding:4 8 4 8;" placeholder="Enter your Password" name="password" id="password"><br>
 
             
             </div>

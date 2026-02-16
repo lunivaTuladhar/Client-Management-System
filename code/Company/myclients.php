@@ -96,7 +96,7 @@ if (!empty($search)) {
 $sql .= " GROUP BY c.Client_ID ";
 
 if ($type === 'loyal') {
-    $sql .= " HAVING total_appts > 5 ";
+    $sql .= " HAVING total_appts >= 5 ";
 } elseif ($type === 'normal') {
     $sql .= " HAVING total_appts BETWEEN 1 AND 5 ";
 } elseif ($type === 'recent') {

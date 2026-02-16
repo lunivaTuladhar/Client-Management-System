@@ -11,9 +11,15 @@ button{
 
 }
 button:hover{
-    background-color:rgb(12, 52, 183);
+    background-color:rgb(14, 62, 217,0.5);
+    color: rgb(245, 243, 243);
 }
 svg{
     height:24px;
     width: 24px;        
+}
+a{
+    all:unset;
+    cursor:pointer;
+    color:rgb(12, 52, 183);
 }

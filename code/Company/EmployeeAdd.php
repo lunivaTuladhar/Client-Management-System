@@ -95,6 +95,15 @@ $conn->close();
         #cancel:hover { 
             background-color: rgba(239,24,24,0.4); 
         }
+        input{
+            padding-left:8px; 
+        }
+        #role{
+            margin-bottom:-12px;
+        }
+        select{
+            padding-left:4px; 
+        }
     </style>
 </head>
 <body>
@@ -109,7 +118,7 @@ $conn->close();
                 <label>Phone:</label><br>
                 <input type="tel" name="phone" placeholder="enter employee phone" required/><br>
 
-                <label>Role:</label><br>
+                <label id="role">Role:</label><br>
                 <select name="role" required>
                     <option value="admin">admin</option>
                     <option value="employee">employee</option>

@@ -17,7 +17,7 @@ if(isset($_SESSION['email'])){
     if($res && $res->num_rows>0){
         $user = $res->fetch_assoc();
         $emp_name = ucfirst($user['Name']);
-        $profile_pic = $user['Profile'] ? $user['Profile'] : "../images/default_profile.png";
+        $profile_pic = $user['Profile'] ? $user['Profile'] :"../images/default_company.png";
     }
 }}
 else{
@@ -28,162 +28,231 @@ if(isset($_SESSION['email'])){
     if($res && $res->num_rows>0){
         $user = $res->fetch_assoc();
         $emp_name = ucfirst($user['Name']);
-        $profile_pic = $user['Profile'] ? $user['Profile'] : "../images/default_profile.png";
+        $profile_pic = $user['Profile'] ? $user['Profile'] : "../images/default_company.png";
     }
 }
 }
     ?>
 
     <style>
-     body {
+/* --- GLOBAL & RESET --- */
+body {
     margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #ffffff;
 }
 
-/* SIDEBAR */
-#side_nav {
-    position: fixed;
-    top: 50px;
-    left: 0;
-    width: 200px;
-    height: calc(100vh - 50px);
-    border-right: 1px solid rgba(0, 0, 0, 0.2);
-    background-color: #ffffff;
-    padding: 12px 8px;
-    overflow: hidden;
-    transition: width 0.1s ease;
-}
-
-#side_nav.collapsed {
-    width: 45px;
-}
-
-/* MENU ITEMS */
-.menu_item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-bottom: 8px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.menu_item:hover {
-    background-color: rgba(14, 62, 217, 0.1);
-}
-
-.menu_item a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    color: inherit;
-    width: 100%;
-}
-
-.menu_item p {
-    margin: 0;
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-/* Hide text when collapsed */
-#side_nav.collapsed .menu_item p {
-    display: none;
-}
-
-/* Active link */
-.menu_item a.active svg,
-.menu_item a.active p {
-    color: rgba(14, 62, 217, 0.9);
-    font-weight: bold;
-}
-
-/* ICONS */
-svg {
-    color: rgba(45, 45, 45, 0.9);
-    min-width: 20px;
-    height: 20px;
-}
-
-#side_nav.collapsed svg {
-    margin: 0 auto;
-}
-
-/* TOP NAV */
+/* --- TOP NAVIGATION --- */
 .top_nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 50px;
-    width: 98%;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    background-color: #ffffff;
+    width: 100%; /* Changed to 100% for full coverage */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: rgba(14, 62, 217, 0.8); /* Slightly more opaque for readability */
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 10;
-    padding: 0 14px;
+    z-index: 1000; /* Ensure it stays above everything */
+    padding: 0 20px;
+    box-sizing: border-box;
 }
 
 .top_nav h2 {
     margin: 0;
     font-size: 18px;
-    color: rgba(45, 45, 45, 0.9);
+    color: white;
 }
 
-.top_nav a {
-    text-decoration: none;
-    color: rgba(45, 45, 45, 0.9);
-    font-size: 14px;
-}
-
-/* LOGO */
 #logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     cursor: pointer;
 }
 
 #logo svg {
-    color: rgba(45, 45, 45, 0.9);
+    color: white;
 }
 
-/* PROFILE AREA */
+/* --- PROFILE DROPDOWN --- */
 #profile {
+    position: relative; /* Essential for absolute positioning of dropdown */
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
-#profile img {
-    height: 38px;
-    width: 38px;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: #e0e0e0; /* grey circle if no image loads */
-    border: 1px solid rgba(0, 0, 0, 0.1);
+.dropdown {
+    position: relative;
+    display: inline-block;
 }
 
-#profile a {
-    font-weight: 500;
+.dropdown_content {
+    display: none; /* Hidden by default */
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    z-index: 1100;
+    padding: 8px 0;
+    margin-top: 10px;
 }
 
-/* COLLAPSED CONTENT ADJUSTMENT */
-.collapsed ~ .main_content {
-    margin-left: 50px;
+/* Show the dropdown when hovering over the profile container */
+#profile:hover .dropdown_content {
+    display: block;
 }
 
+.dropdown_content a{
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+.top{
+    color:rgba(14,62,217,0.9);
+}
+.top:hover{
+    background-color: rgba(14,62,217,0.4);
+}
+
+.dropdown_content hr {
+    border: 0;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    margin: 4px 0;
+}
+
+.logout_link{
+    color: rgba(239,24,24);
+}
+.logout_link:hover {
+    background-color: rgba(239,24,24,0.4); 
+}
+
+/* Little arrow on top of dropdown */
+.dropdown_content::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: 15px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #ffffff;
+}
+
+
+/* --- SIDEBAR BASE --- */
+#side_nav {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 220px; /* Fully expanded width */
+    height: calc(100vh - 50px);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    padding: 15px 8px;
+    overflow: hidden;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+    box-sizing: border-box;
+}
+
+
+#side_nav.collapsed {
+    width: 55px;
+}
+
+#side_nav:not(.collapsed), 
+#side_nav.collapsed:hover {
+    width: 220px;
+    
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+}
+
+.menu_item {
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.menu_item:hover {
+    background-color: rgba(14, 62, 217, 0.08);
+}
+
+.menu_item a {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    text-decoration: none;
+    color: #444;
+    width: 100%;
+    overflow: hidden;
+}
+
+.menu_item svg {
+    min-width: 20px;
+
+    height: 20px;
+    margin-right: 15px; 
+    color: #555;
+}
+
+
+.menu_item p {
+    margin: 0;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+/* Hide text ONLY when sidebar is collapsed AND not being hovered */
+#side_nav.collapsed:not(:hover) .menu_item p {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Active Link Styling */
+.menu_item a.active {
+    background-color: rgba(14, 62, 217, 0.1);
+    border-radius:12px;
+}
+
+.menu_item a.active svg,
+.menu_item a.active p {
+    color: #0e3ed9;
+    font-weight: 600;
+    
+}
+
+/* --- MAIN CONTENT ADJUSTMENT --- */
 .main_content {
-    margin-left: 200px;
-    padding-top: 60px;
-    transition: margin-left 0.2s ease;
+    padding: 20px;
+    padding-top: 70px; /* Accounts for Top Nav */
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-        
-    </style>
+
+/* Push content when sidebar is permanently toggled open */
+#side_nav:not(.collapsed) ~ .main_content {
+    margin-left: 220px;
+}
+
+/* Bring content back when sidebar is collapsed */
+#side_nav.collapsed ~ .main_content {
+    margin-left: 60px;
+}
+
+
+/* Note: Content does NOT jump when hovering (standard UX) */
+</style>
 
 
 <!-- client nav bar -->
@@ -230,7 +299,7 @@ elseif( $_SESSION['user_type'] == "employee") :?>
         </div>
 
         <div class="menu_item">
-            <a href="../Employee/OwnAppt.php"class="<?php if ($current_page == 'Appointment.php') echo'active'; ?>">
+            <a href="../Employee/OwnAppt.php"class="<?php if ($current_page == 'OwnAppt.php') echo'active'; ?>">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><path fill="currentColor" d="M928 224H768v-56c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v56H548v-56c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v56H328v-56c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v56H96c-17.7 0-32 14.3-32 32v576c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V256c0-17.7-14.3-32-32-32m-40 568H136V296h120v56c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-56h148v56c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-56h148v56c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-56h120zM416 496H232c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h184c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8m0 136H232c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h184c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8m308.2-177.4L620.6 598.3l-52.8-73.1c-3-4.2-7.8-6.6-12.9-6.6H500c-6.5 0-10.3 7.4-6.5 12.7l114.1 158.2a15.9 15.9 0 0 0 25.8 0l165-228.7c3.8-5.3 0-12.7-6.5-12.7H737c-5-.1-9.8 2.4-12.8 6.5"/></svg>
                 <p>Appointment</p>
             </a>
@@ -298,16 +367,30 @@ elseif( $_SESSION['user_type'] == "superadmin") :?>
 
     <!-- Top Nav -->
     <div class="top_nav">
-        <div id="logo">
+        <div id="logo" >
             <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor"
                 d="M4 6a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m0 6a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m1 5a1 1 0 1 0 0 2h14a1 1 0 1 0 0-2z"/></svg>
-            <h2>Logo</h2>
+            <h2>CMS</h2>
         </div>
         <div id="profile">
-            <img src="<?php echo $profile_pic; ?>" alt='pic' height="40px" width="40px" class="profile">
-
-            <a href="profile.php">My Account</a>
+    <img src="<?php echo $profile_pic; ?>" class="profile-pic"style="height:40px; width:40px; border-radius:50%;">
+    <div class="dropdown">
+        <a href="javascript:void(0)" id="account_btn" style="color:white;">My Account</a>
+        <div class="dropdown_content" id="account_dropdown">
+            <a href="profile.php" class="top">View Profile</a>
+            <?php if($user_type=='client'):?>
+            <a href="edit_profile.php" class="top">Edit Profile</a>
+            <?php elseif($user_type=='admin'):?>
+                <a href="../company/edit_profile.php" class="top">Edit Profile</a>
+            <a href="edit_profile.php" class="top">Edit Profile</a>
+            <?php else:?>
+                <a href="../employee/edit_profile.php" class="top">Edit Profile</a>
+            <?php endif;?>
+            <hr>
+            <a href="../login/logout.php" class="logout_link" onclick="return confirm('Are you sure you want to logout?')">Log Out</a>
         </div>
+    </div>
+</div>
     </div>
 
     <script>

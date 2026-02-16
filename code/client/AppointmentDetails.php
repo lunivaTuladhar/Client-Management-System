@@ -75,14 +75,17 @@ if(isset($_POST['cancel_appt'])){
     <link rel="stylesheet" href="../style/Heading.css">
     <link rel="stylesheet" href="../style/button.css">
     <style>
-        #whole{padding:12px;margin:12px 12px 12px 70px;border-radius:12px;background-color:white;}
+        #whole{padding:12px;margin:28px 12px 12px 70px;border-radius:12px;background-color:white;}
         #top{display:flex;gap:12px;align-items:center;}
         #content{padding:12px;background:#F5F3F3;border-radius:12px;}
         label{width:120px;font-weight:bold;color:rgba(14,62,217,0.9);}
-        input, select, textarea{width:100%;padding:6px;margin-bottom:8px;border-radius:6px;border:1px solid #ccc;}
+        input, select, textarea{padding:6px;margin-bottom:8px;border-radius:6px;border:1px solid #ccc;}
+        textarea{width:98%;}
         button{padding:6px 12px;border-radius:6px;cursor:pointer;margin-right:6px;}
         .btn-save{background:#0e3ed9;color:white;border:none;}
-        .btn-cancel{background:red;color:white;border:none;}
+        .btn-cancel{background:rgba(239,24,24);color:white;border:none;}
+        .btn-cancel:hover{background-color: rgba(239,24,24,0.4);}
+        #button{display:flex; gap:24px;}
     </style>
 </head>
 <body>
@@ -143,9 +146,10 @@ if(isset($_POST['cancel_appt'])){
                     <label>Reason:</label>
                     <textarea name="reason" rows="4" required><?php echo $appt['Reason']; ?></textarea>
                 </div>
-
+                <div id="button">
                 <button type="submit" name="save_appt" class="btn-save">Save Changes</button>
                 <button type="submit" name="cancel_appt" class="btn-cancel" onclick="return confirm('Are you sure you want to cancel this appointment?');">Cancel Appointment</button>
+                </div>
             </form>
         </div>
     </div>

@@ -91,21 +91,22 @@ $delete_stmt->execute();
 <head>
     <link rel="stylesheet" href="../style/form.css">
     <link rel="stylesheet" href="../style/button.css">
+    <link rel="stylesheet" href="../style/Heading.css">
     <title>Log In</title>
     <style>
         form{
             width:40%;
             margin-left:300px;
         }
+        input{
+            padding-left:8px;
+        }
+        
     </style>
 </head>
 <body>
     <form align="center" method="post">
-        <h3>LOG IN</h3>
-
-        <?php if ($error): ?>
-            <p style="color:red;"><?= $error ?></p>
-        <?php endif; ?>
+        <h2>LOG IN</h2>
 
         <div align="left">
             <label>Email</label><br>
@@ -114,6 +115,10 @@ $delete_stmt->execute();
             <label>Password</label><br>
             <input type="password" name="password" placeholder="Enter your Password" required><br>
         </div>
+
+        <?php if ($error): ?>
+            <p style="color:red;"><?= $error ?></p>
+        <?php endif; ?>
 
         <button type="submit">Log In</button>
         <p>Don’t have an account? <a href="sign up.php">Sign up</a></p>

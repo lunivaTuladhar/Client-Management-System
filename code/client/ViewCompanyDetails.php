@@ -46,10 +46,7 @@
             margin: 65px 0px 0px 78px;
         }
         #timetable{ 
-          margin-left:0px; 
-          padding:8px 12px; 
-          width:96%; 
-          margin-top:12px; 
+          width:100%; 
           border-radius:12px;
           background-color: #f3f3f3 ;
         }
@@ -68,7 +65,6 @@
           text-align:left; 
           color: rgba(14,62,217,0.9);
         }
-        tr:hover{ background-color:#eaeaea; }
         thead th:first-child{ 
           border-top-left-radius:12px; 
           border-bottom-left-radius:12px; 
@@ -133,8 +129,7 @@
             bottom:20px;
         } .info{
             background-color:#f3f3f3;
-            padding-left:20px;
-            padding-top:20px;
+            padding:12px;
             margin-bottom:0px;
             border-radius:12px;
         }
@@ -144,6 +139,7 @@
 <body style="background-color:#f3f3f3;">
 <div class="company-detail">
     <div class="company-header">
+
         <img src="<?php echo $company['Logo'] ?: '../images/default_company.png'; ?>" 
              alt="Company Logo" class="company-logo">
         <div>
@@ -153,10 +149,6 @@
     </div>
 
     <div class="info">
-
-        <div class="company-description">
-            <?php echo nl2br(htmlspecialchars($company['Description'] ?: "No description available.")); ?>
-        </div>
         <div id="timetable">
             <h3>Timetable</h3>
             <table>

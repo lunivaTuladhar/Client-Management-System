@@ -24,12 +24,12 @@
         $phone = $employee['Phone'];
         $address = $employee['Address']; 
         $db_password = $employee['Password'];
-        $profile_pic = !empty($employee['Profile']) ? $employee['Profile'] : "../images/default_profile.png";
+        $profile_pic = !empty($employee['Profile']) ? $employee['Profile'] : "";
     } else {
         $name = "User";
         $phone = "";
         $address = "";
-        $profile_pic = "../images/default_profile.png";
+        $profile_pic = "";
     }
 
     // Update profile info
@@ -51,6 +51,7 @@
 
     // Handle profile picture upload
     if(isset($_POST['update_profile_pic'])){
+        
         if(isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0){
             $file_tmp = $_FILES['profile_pic']['tmp_name'];
             $file_name = time() . "_" . basename($_FILES['profile_pic']['name']);
@@ -91,17 +92,12 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
 <!DOCTYPE html>
 <html>
 <head>
-    <title>employee Profile</title>
+    <title> Profile</title>
     <link rel="stylesheet" href="../style/button.css">
     <link rel="stylesheet" href="../style/Heading.css">
-    <link rel="stylesheet" href="../style/form.css">
 
     <style>
-        body { 
-            background:#F5F3F3; 
-            margin:0; 
-            padding:30px;
-        }
+        body { background:#F5F3F3; margin:0; padding:30px; }
         .container {
             max-width:500px;
             margin:auto;
@@ -110,92 +106,20 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
             border-radius:12px;
         }
         .profile-pic-container {
-            width:120px; 
-            height:120px; 
-            margin:auto; 
-            position:relative;
+            width:120px; height:120px; margin:auto; position:relative;
         }
-        .profile-pic { 
-            width:120px; 
-            height:120px; 
-            border-radius:50%; 
-            object-fit:cover; 
-        }
-        .upload-btn {
-            position:absolute; 
-            bottom:0; 
-            right:0;
-            width:30px;
-            background:#2563eb;
-            color:white;
-            padding:6px; 
-            border-radius:100%; 
-            cursor:pointer;
-        }
+        .profile-pic { width:120px; height:120px; border-radius:50%; object-fit:cover; }
+        
         input {
-            width:100%;
-            border:1px solid #ccc; 
-            border-radius:6px; 
-            margin-bottom:12px;
+            width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; margin-bottom:12px;
         }
-        .edit-btn,.save-btn,.cancel-btn,.password-btn {
-            width:100%; 
-            padding:10px; 
-            border:none; 
-            border-radius:6px; 
-            cursor:pointer; 
-            margin-top:10px;
-        }
-        .edit-btn{ 
-            width:150px;
-            color:#fff; 
-        }
-        .save-btn{ 
-            color:#fff; 
-            display:none; 
-        }
-        .cancel-btn{ 
-            background-color:rgba(239,24,24,0.2);
-            color:#EF1818;
-            border :1px solid #EF1818;  
-            display:none; 
-        }
-        .cancel-btn:hover{
-            background-color:rgba(239,24,24,0.4);
-        }
-        .password-btn{ 
-            color:#fff; 
-            border-radius: 12px;
-            width:50%;
-            margin:0;
-        }
-        .msg{ 
-            text-align:center; 
-            color:green; 
-        }
-        .modal {
-            display:none; 
-            position:fixed; 
-            top:0; left:0; 
-            width:100%; 
-            height:100%;
-            background:rgba(0,0,0,0.6); 
-            justify-content:center; 
-            align-items:center;
-        }
-        .modal-content {
-            background:white; 
-            padding:20px; 
-            border-radius:12px;
-            width:300px;
-        }
-        .close { 
-            float:right; 
-            cursor:pointer; 
-        }
+        
+       
+        .msg{ text-align:center; color:green; }
+        
+        .close { float:right; cursor:pointer; }
         #bottom{
-            right:0;
-            display:flex;
+            left:0;
             gap:12px;
             
         }
@@ -212,7 +136,9 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
             color:#EF1818;
             border :1px solid #EF1818; 
         }
-        
+        #form{
+            padding-right:12px;
+        }
     </style>
 
 </head>
@@ -224,10 +150,13 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
     <?php if(isset($msg)){ echo "<p class='msg'>$msg</p>"; } ?>
 
     <div class="profile-pic-container">
+        <?php if(  empty($profile_pic)):?>
+        <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' class="profile-pic"><g fill='currentColor' fill-rule='evenodd' clip-rule='evenodd'><path d='M16 9a4 4 0 1 1-8 0a4 4 0 0 1 8 0m-2 0a2 2 0 1 1-4 0a2 2 0 0 1 4 0'/><path d='M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11s11-4.925 11-11S18.075 1 12 1M3 12c0 2.09.713 4.014 1.908 5.542A8.99 8.99 0 0 1 12.065 14a8.98 8.98 0 0 1 7.092 3.458A9 9 0 1 0 3 12m9 9a8.96 8.96 0 0 1-5.672-2.012A6.99 6.99 0 0 1 12.065 16a6.99 6.99 0 0 1 5.689 2.92A8.96 8.96 0 0 1 12 21'/></g></svg>
+            <?php else:?>
         <img src="<?php echo $profile_pic; ?>" class="profile-pic">
-        <button class="upload-btn" onclick="openPicModal()">✎</button>
+        <?php endif;?>
     </div>
-
+    <div id="form">
     <form method="post">
         <label>Name</label>
         <input type="text" name="name" id="name" value="<?php echo $name; ?>" disabled>
@@ -244,63 +173,12 @@ $update_pic = $conn->prepare("UPDATE company SET Logo=? WHERE Company_ID=?");
         <label>Address</label>
         <input type="text" name="address" id="address" value="<?php echo $address; ?>" disabled>
 
-        <button type="button" class="edit-btn" id="editBtn" onclick="enableEdit()">Edit Profile</button>
-        <button type="submit" class="save-btn" name="save_profile" id="saveBtn">Save</button>
-        <button type="button" class="cancel-btn" id="cancelBtn" onclick="cancelEdit()">Cancel</button>
+        
     </form>
 <div id="bottom">
-    <button class="password-btn" onclick="openPassModal()">Change Password</button>
  <a href="../login/logout.php" class="logout-button" onclick="return confirm('Are you sure you want to logout?')"><button id="logout">Logout</button></a>
 </div>
-</div>
-
-<!-- Profile Picture Modal -->
-<div id="picModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closePicModal()">&times;</span>
-        <h3>Upload Profile Picture</h3>
-        <form method="post" enctype="multipart/form-data">
-            <input type="file" name="profile_pic" required>
-            <button type="submit" name="update_profile_pic" class="save-btn" style="display:block;">Upload</button>
-        </form>
     </div>
-</div>
-
-<!-- Password Modal -->
-<div id="passModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closePassModal()">&times;</span>
-        <h3>Change Password</h3>
-        <form method="post">
-            <input type="password" name="old_password" placeholder="Old Password" required>
-            <input type="password" name="new_password" placeholder="New Password" required>
-            <button type="submit" name="change_password" class="save-btn" style="display:block;">Update</button>
-        </form>
-    </div>
-</div>
-
-<script>
-function enableEdit(){
-    document.getElementById("name").disabled = false;
-    document.getElementById("phone").disabled = false;
-    document.getElementById("address").disabled = false;
-    document.getElementById("DOB").disabled = false;
-
-    document.getElementById("editBtn").style.display = "none";
-    document.getElementById("saveBtn").style.display = "block";
-    document.getElementById("cancelBtn").style.display = "block";
-}
-
-function cancelEdit(){
-    location.reload();
-}
-
-function openPicModal(){ document.getElementById("picModal").style.display = "flex"; }
-function closePicModal(){ document.getElementById("picModal").style.display = "none"; }
-
-function openPassModal(){ document.getElementById("passModal").style.display = "flex"; }
-function closePassModal(){ document.getElementById("passModal").style.display = "none"; }
-</script>
 
 </body>
 </html>
